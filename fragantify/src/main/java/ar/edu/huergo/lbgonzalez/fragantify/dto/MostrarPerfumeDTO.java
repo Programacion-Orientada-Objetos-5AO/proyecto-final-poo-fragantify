@@ -1,17 +1,16 @@
 package ar.edu.huergo.lbgonzalez.fragantify.dto;
-
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class MostrarPerfumeDTO {
-    private Long id;
-    private String nombre;
-    private String marca;
-    private Double precio;
-    private String familiaOlfativa;
-    private Boolean favorito;
+@EqualsAndHashCode(callSuper = true)
+public class MostrarPerfumeDTO extends PerfumeDTO {
+    private String categoriaNombre;
+
+    public MostrarPerfumeDTO(Long id, String nombre, String marca, Double precio, String categoriaNombre) {
+        super(id, nombre, marca, precio);
+        this.categoriaNombre = categoriaNombre;
+    }
 }
+
+

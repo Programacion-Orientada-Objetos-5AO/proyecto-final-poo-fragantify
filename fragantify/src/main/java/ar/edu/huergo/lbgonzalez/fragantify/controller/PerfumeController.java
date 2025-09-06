@@ -1,5 +1,5 @@
 
-import ar.edu.huergo.lbgonzalez.fragantify.dto.PerfumeDto;
+import ar.edu.huergo.lbgonzalez.fragantify.dto.PerfumeDTO;
 import ar.edu.huergo.lbgonzalez.fragantify.entity.Perfume;
 import ar.edu.huergo.lbgonzalez.fragantify.service.PerfumeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,22 +17,22 @@ public class PerfumeController {
     private PerfumeService perfumeService;
 
     @GetMapping
-    public List<PerfumeDto> getPerfumes() {
+    public List<PerfumeDTO> getPerfumes() {
         return this.perfumeService.getPerfumes();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PerfumeDto> getPerfume(@PathVariable Long id) {
+    public ResponseEntity<PerfumeDTO> getPerfume(@PathVariable Long id) {
         Optional<Perfume> perfumeOpt = this.perfumeService.getPerfume(id);
         if (perfumeOpt.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         Perfume perfume = perfumeOpt.get();
-        return ResponseEntity.ok(new PerfumeDto(perfume.getId(), perfume.getNombre()));
+        return ResponseEntity.ok(new PerfumeDTO(perfume.getId(), perfume.getNombre()));
     }
 
     @PostMapping
-    public ResponseEntity<String> crearPerfume(@RequestBody PerfumeDto perfumeDto) {
+    public ResponseEntity<String> crearPerfume(@RequestBody PerfumeDTO perfumeDto) {
         try {
             this.perfumeService.crearPerfume(perfumeDto);
             return ResponseEntity.created(null).body("Perfume creado correctamente");
@@ -42,7 +42,7 @@ public class PerfumeController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> actualizarPerfume(@PathVariable Long id, @RequestBody PerfumeDto perfumeDto) {
+    public ResponseEntity<String> actualizarPerfume(@PathVariable Long id, @RequestBody PerfumeDTO perfumeDto) {
         try {
             this.perfumeService.actualizarPerfume(id, perfumeDto);
             return ResponseEntity.ok("Perfume actualizado correctamente");

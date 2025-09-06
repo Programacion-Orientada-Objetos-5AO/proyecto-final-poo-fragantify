@@ -1,8 +1,6 @@
 package ar.edu.huergo.lbgonzalez.fragantify.service;
 
 import ar.edu.huergo.lbgonzalez.fragantify.entity.Perfume;
-
-import ar.edu.huergo.lbgonzalez.fragantify.dto.PerfumeDto;
 import ar.edu.huergo.lbgonzalez.fragantify.repository.PerfumeRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,46 +16,57 @@ public class PerfumeService {
     private PerfumeRepository perfumeRepository;
 
     // Obtener todos los perfumes
-    public List<PerfumeDto> getPerfumes() {
-        return perfumeRepository.findAll()
-                .stream()
-                .map(p -> new PerfumeDto(
-                        p.getId(),
-                        p.getNombre(),
-                        p.getMarca(),
-                        p.getPrecio()
-                ))
-                .toList();
+    public List<Perfume> obtenerTodosLosPerfumes() {
+        return perfumeRepository.findAll();
     }
 
     // Obtener perfume por ID
-    public Optional<Perfume> getPerfume(Long id) {
-        return perfumeRepository.findById(id);
+    public Perfume obtenerPerfumePorId(Long id) {
+        return perfumeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Perfume no encontrado con id " + id));
     }
 
     // Crear perfume
-    public void crearPerfume(PerfumeDto perfumeDto) {
-        perfumeRepository.save(new Perfume(
-                perfumeDto.getNombre(),
-                perfumeDto.getMarca(),
-                perfumeDto.getPrecio()
-        ));
+    public Perfume crearPerfume(Perfume perfume, Object something) {
+        return perfumeRepository.save(perfume);
     }
 
     // Actualizar perfume
-    public void actualizarPerfume(Long id, PerfumeDto perfumeDto) {
-        Perfume perfume = perfumeRepository.findById(id)
+    public Perfume actualizarPerfume(Long id, Perfume perfume, Object something) {
+        Perfume existing = perfumeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Perfume no encontrado con id " + id));
-
-        perfume.setNombre(perfumeDto.getNombre());
-        perfume.setMarca(perfumeDto.getMarca());
-        perfume.setPrecio(perfumeDto.getPrecio());
-
-        perfumeRepository.save(perfume);
+        existing.setNombre(perfume.getNombre());
+        existing.setMarca(perfume.getMarca());
+        existing.setPrecio(perfume.getPrecio());
+        return perfumeRepository.save(existing);
     }
 
     // Eliminar perfume
     public void eliminarPerfume(Long id) {
         perfumeRepository.deleteById(id);
+    }
+
+    // Filtrar perfumes
+    public List<Perfume> filtrarPerfumes(String familiaOlfativa, Double precioMin, Double precioMax) {
+        // Implementar lógica de filtrado, por ahora devolver todos
+        return perfumeRepository.findAll();
+    }
+
+    // Obtener perfumes por marca
+    public List<Perfume> obtenerPerfumesPorMarca(String marca) {
+        // Implementar lógica, por ahora devolver todos
+        return perfumeRepository.findAll();
+    }
+
+    // Comparar perfumes
+    public List<Perfume> compararPerfumes(List<Long> ids) {
+        return perfumeRepository.findAllById(ids);
+    }
+
+    // Toggle favorito
+    public Perfume toggleFavorito(Long id) {
+        Perfume perfume = obtenerPerfumePorId(id);
+        // Asumir que hay un campo favorito, por ahora no cambiar
+        return perfumeRepository.save(perfume);
     }
 }
