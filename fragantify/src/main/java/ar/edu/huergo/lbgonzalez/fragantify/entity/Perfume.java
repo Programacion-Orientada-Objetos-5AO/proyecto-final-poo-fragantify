@@ -1,51 +1,42 @@
 package ar.edu.huergo.lbgonzalez.fragantify.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "perfume")
+@Table(name="perfume")
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class Perfume {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank(message = "El nombre es obligatorio")
-    @Size(min = 2, max = 200, message = "El nombre debe tener entre 2 y 200 caracteres")
+    @Size(min = 2, max = 100)
     private String nombre;
 
     @NotBlank(message = "La marca es obligatoria")
-    @Size(max = 100)
+    @Size(min = 2, max = 100)
     private String marca;
 
-    @Size(max = 50)
-    private String precio;
+    @Positive(message = "El precio debe ser mayor a 0")
+    private double precio;
 
-    @Size(max = 255)
-    private String imagenUrl;
-
-    @Size(max = 50)
-    private String genero;
-
-    @Size(max = 20)
-    private String longevidad;
-
-    @Size(max = 20)
-    private String estela;
-
-    @Column(length = 1000)
-    private String notasGenerales;
+    // Constructor para crear perfumes nuevos (sin id)
+    public Perfume(String nombre, String marca, double precio) {
+        this.nombre = nombre;
+        this.marca = marca;
+        this.precio = precio;
+    }
 }
