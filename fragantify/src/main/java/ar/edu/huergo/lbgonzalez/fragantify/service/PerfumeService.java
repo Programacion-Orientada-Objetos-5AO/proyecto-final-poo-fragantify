@@ -1,6 +1,7 @@
 package ar.edu.huergo.lbgonzalez.fragantify.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,23 +16,22 @@ public class PerfumeService {
     private PerfumeRepository perfumeRepository;
 
     // Obtener todos los perfumes
-    public List<Perfume> obtenerTodosLosPerfumes() {
+    public List<Perfume> getPerfumes() {
         return perfumeRepository.findAll();
     }
 
     // Obtener perfume por ID
-    public Perfume obtenerPerfumePorId(Long id) {
-        return perfumeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Perfume no encontrado con id " + id));
+    public Optional<Perfume> getPerfume(Long id) {
+        return perfumeRepository.findById(id);
     }
 
     // Crear perfume
-    public Perfume crearPerfume(Perfume perfume, Object something) {
+    public Perfume crearPerfume(Perfume perfume) {
         return perfumeRepository.save(perfume);
     }
 
     // Actualizar perfume
-    public Perfume actualizarPerfume(Long id, Perfume perfume, Object something) {
+    public Perfume actualizarPerfume(Long id, Perfume perfume) {
         Perfume existing = perfumeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Perfume no encontrado con id " + id));
         existing.setNombre(perfume.getNombre());
@@ -64,7 +64,7 @@ public class PerfumeService {
 
     // Toggle favorito
     public Perfume toggleFavorito(Long id) {
-        Perfume perfume = obtenerPerfumePorId(id);
+        Perfume perfume = getPerfume(id).orElseThrow(() -> new RuntimeException("Perfume no encontrado con id " + id));
         // Asumir que hay un campo favorito, por ahora no cambiar
         return perfumeRepository.save(perfume);
     }

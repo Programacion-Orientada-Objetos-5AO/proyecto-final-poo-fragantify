@@ -24,49 +24,49 @@ import ar.edu.huergo.lbgonzalez.fragantify.service.PerfumeService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/Perfumes")
+@RequestMapping("/api/perfumes")
 public class PerfumeController {
     @Autowired
-    private PerfumeService PerfumeService;
+    private PerfumeService perfumeService;
 
     @Autowired
-    private PerfumeMapper PerfumeMapper;
+    private PerfumeMapper perfumeMapper;
 
     @GetMapping
     public ResponseEntity<List<MostrarPerfumeDTO>> obtenerTodosLosPerfumes() {
-        List<Perfume> Perfumes = PerfumeService.obtenerTodosLosPerfumes();
-        List<MostrarPerfumeDTO> PerfumesDTO = PerfumeMapper.toDTOList(Perfumes);
-        return ResponseEntity.ok(PerfumesDTO);
+        List<Perfume> perfumes = perfumeService.getPerfumes();
+        List<MostrarPerfumeDTO> perfumesDto = perfumeMapper.toDTOList(perfumes);
+        return ResponseEntity.ok(perfumesDto);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<MostrarPerfumeDTO> obtenerPerfumePorId(@PathVariable Long id) {
-        Perfume Perfume = PerfumeService.obtenerPerfumePorId(id);
-        MostrarPerfumeDTO PerfumeDTO = PerfumeMapper.toDTO(Perfume);
-        return ResponseEntity.ok(PerfumeDTO);
+        Perfume perfume = perfumeService.getPerfume(id).orElseThrow(() -> new RuntimeException("Perfume no encontrado con id " + id));
+        MostrarPerfumeDTO perfumeDto = perfumeMapper.toDTO(perfume);
+        return ResponseEntity.ok(perfumeDto);
     }
 
     @PostMapping
-    public ResponseEntity<MostrarPerfumeDTO> crearPerfume(@Valid @RequestBody CrearActualizarPerfumeDTO PerfumeDTO) {
-        Perfume Perfume = PerfumeMapper.toEntity(PerfumeDTO);
-        Perfume PerfumeCreado = PerfumeService.crearPerfume(Perfume, null);
+    public ResponseEntity<MostrarPerfumeDTO> crearPerfume(@Valid @RequestBody CrearActualizarPerfumeDTO perfumeDto) {
+        Perfume perfume = perfumeMapper.toEntity(perfumeDto);
+        Perfume perfumeCreado = perfumeService.crearPerfume(perfume);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                .buildAndExpand(PerfumeCreado.getId()).toUri();
-        return ResponseEntity.created(location).body(PerfumeMapper.toDTO(PerfumeCreado));
+                .buildAndExpand(perfumeCreado.getId()).toUri();
+        return ResponseEntity.created(location).body(perfumeMapper.toDTO(perfumeCreado));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<MostrarPerfumeDTO> actualizarPerfume(@PathVariable Long id,
-            @Valid @RequestBody CrearActualizarPerfumeDTO PerfumeDTO) {
-        Perfume Perfume = PerfumeMapper.toEntity(PerfumeDTO);
-        Perfume PerfumeActualizado =
-                PerfumeService.actualizarPerfume(id, Perfume, null);
-        return ResponseEntity.ok(PerfumeMapper.toDTO(PerfumeActualizado));
+            @Valid @RequestBody CrearActualizarPerfumeDTO perfumeDto) {
+        Perfume perfume = perfumeMapper.toEntity(perfumeDto);
+        Perfume perfumeActualizado =
+                perfumeService.actualizarPerfume(id, perfume);
+        return ResponseEntity.ok(perfumeMapper.toDTO(perfumeActualizado));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarPerfume(@PathVariable Long id) {
-        PerfumeService.eliminarPerfume(id);
+        perfumeService.eliminarPerfume(id);
         return ResponseEntity.noContent().build();
     }
 
@@ -75,29 +75,29 @@ public class PerfumeController {
             @RequestParam(required = false) String familiaOlfativa,
             @RequestParam(required = false) Double precioMin,
             @RequestParam(required = false) Double precioMax) {
-        List<Perfume> perfumes = PerfumeService.filtrarPerfumes(familiaOlfativa, precioMin, precioMax);
-        List<MostrarPerfumeDTO> perfumesDTO = PerfumeMapper.toDTOList(perfumes);
-        return ResponseEntity.ok(perfumesDTO);
+        List<Perfume> perfumes = perfumeService.filtrarPerfumes(familiaOlfativa, precioMin, precioMax);
+        List<MostrarPerfumeDTO> perfumesDto = perfumeMapper.toDTOList(perfumes);
+        return ResponseEntity.ok(perfumesDto);
     }
 
     @GetMapping("/marca/{marca}")
     public ResponseEntity<List<MostrarPerfumeDTO>> obtenerPerfumesPorMarca(@PathVariable String marca) {
-        List<Perfume> perfumes = PerfumeService.obtenerPerfumesPorMarca(marca);
-        List<MostrarPerfumeDTO> perfumesDTO = PerfumeMapper.toDTOList(perfumes);
-        return ResponseEntity.ok(perfumesDTO);
+        List<Perfume> perfumes = perfumeService.obtenerPerfumesPorMarca(marca);
+        List<MostrarPerfumeDTO> perfumesDto = perfumeMapper.toDTOList(perfumes);
+        return ResponseEntity.ok(perfumesDto);
     }
 
     @PostMapping("/comparar")
     public ResponseEntity<List<MostrarPerfumeDTO>> compararPerfumes(@RequestBody List<Long> ids) {
-        List<Perfume> perfumes = PerfumeService.compararPerfumes(ids);
-        List<MostrarPerfumeDTO> perfumesDTO = PerfumeMapper.toDTOList(perfumes);
-        return ResponseEntity.ok(perfumesDTO);
+        List<Perfume> perfumes = perfumeService.compararPerfumes(ids);
+        List<MostrarPerfumeDTO> perfumesDto = perfumeMapper.toDTOList(perfumes);
+        return ResponseEntity.ok(perfumesDto);
     }
 
     @PutMapping("/{id}/favorito")
     public ResponseEntity<MostrarPerfumeDTO> toggleFavorito(@PathVariable Long id) {
-        Perfume perfume = PerfumeService.toggleFavorito(id);
-        MostrarPerfumeDTO perfumeDTO = PerfumeMapper.toDTO(perfume);
-        return ResponseEntity.ok(perfumeDTO);
+        Perfume perfume = perfumeService.toggleFavorito(id);
+        MostrarPerfumeDTO perfumeDto = perfumeMapper.toDTO(perfume);
+        return ResponseEntity.ok(perfumeDto);
     }
 }

@@ -1,11 +1,14 @@
 package ar.edu.huergo.lbgonzalez.fragantify.mapper;
 
-import ar.edu.huergo.lbgonzalez.fragantify.dto.CrearActualizarPerfumeDTO;
-import ar.edu.huergo.lbgonzalez.fragantify.dto.MostrarPerfumeDTO;
-import ar.edu.huergo.lbgonzalez.fragantify.entity.Perfume;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.stereotype.Component;
+
+import ar.edu.huergo.lbgonzalez.fragantify.dto.CrearActualizarPerfumeDTO;
+import ar.edu.huergo.lbgonzalez.fragantify.dto.MostrarPerfumeDTO;
+import ar.edu.huergo.lbgonzalez.fragantify.entity.Perfume;
+@Component
 public class PerfumeMapper {
 
     public static MostrarPerfumeDTO toDTO(Perfume perfume) {
