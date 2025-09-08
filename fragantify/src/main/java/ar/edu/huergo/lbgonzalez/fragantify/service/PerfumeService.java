@@ -1,13 +1,12 @@
 package ar.edu.huergo.lbgonzalez.fragantify.service;
 
-import ar.edu.huergo.lbgonzalez.fragantify.entity.Perfume;
-import ar.edu.huergo.lbgonzalez.fragantify.repository.PerfumeRepository;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import ar.edu.huergo.lbgonzalez.fragantify.entity.Perfume;
+import ar.edu.huergo.lbgonzalez.fragantify.repository.PerfumeRepository;
 
 @Service
 public class PerfumeService {

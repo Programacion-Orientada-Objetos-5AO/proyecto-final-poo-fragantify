@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PerfumeDTO {
+public class PerfumeDto {
     private Long id;
 
     @NotBlank(message = "El nombre es obligatorio")
