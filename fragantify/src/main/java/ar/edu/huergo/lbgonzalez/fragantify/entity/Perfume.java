@@ -33,10 +33,21 @@ public class Perfume {
     @Positive(message = "El precio debe ser mayor a 0")
     private double precio;
 
+    @Size(max = 100)
+    private String familiaOlfativa;
+
     // Constructor para crear perfumes nuevos (sin id)
     public Perfume(String nombre, String marca, double precio) {
         this.nombre = nombre;
         this.marca = marca;
         this.precio = precio;
+    }
+
+    // Constructor con familiaOlfativa
+    public Perfume(String nombre, String marca, double precio, String familiaOlfativa) {
+        this.nombre = nombre;
+        this.marca = marca;
+        this.precio = precio;
+        this.familiaOlfativa = familiaOlfativa;
     }
 }

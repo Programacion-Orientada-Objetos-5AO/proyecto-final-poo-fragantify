@@ -8,10 +8,11 @@ import org.springframework.stereotype.Component;
 import ar.edu.huergo.lbgonzalez.fragantify.dto.CrearActualizarPerfumeDTO;
 import ar.edu.huergo.lbgonzalez.fragantify.dto.MostrarPerfumeDTO;
 import ar.edu.huergo.lbgonzalez.fragantify.entity.Perfume;
+
 @Component
 public class PerfumeMapper {
 
-    public static MostrarPerfumeDTO toDTO(Perfume perfume) {
+    public MostrarPerfumeDTO toDTO(Perfume perfume) {
         return new MostrarPerfumeDTO(
             perfume.getId(),
             perfume.getNombre(),
@@ -21,7 +22,7 @@ public class PerfumeMapper {
         );
     }
 
-    public static Perfume toEntity(CrearActualizarPerfumeDTO dto) {
+    public Perfume toEntity(CrearActualizarPerfumeDTO dto) {
         return new Perfume(
             dto.getNombre(),
             dto.getMarca(),
@@ -29,9 +30,9 @@ public class PerfumeMapper {
         );
     }
 
-    public static List<MostrarPerfumeDTO> toDTOList(List<Perfume> perfumes) {
+    public List<MostrarPerfumeDTO> toDTOList(List<Perfume> perfumes) {
         return perfumes.stream()
-            .map(PerfumeMapper::toDTO)
+            .map(this::toDTO)
             .collect(Collectors.toList());
     }
 }
