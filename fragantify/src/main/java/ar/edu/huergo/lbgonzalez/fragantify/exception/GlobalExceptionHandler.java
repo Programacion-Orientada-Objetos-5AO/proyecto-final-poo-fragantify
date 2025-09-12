@@ -1,4 +1,4 @@
-package main.java.ar.edu.huergo.lbgonzalez.fragantify.exception;
+package ar.edu.huergo.lbgonzalez.fragantify.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;

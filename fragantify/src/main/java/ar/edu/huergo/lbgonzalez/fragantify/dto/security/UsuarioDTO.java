@@ -1,4 +1,4 @@
-package main.java.ar.edu.huergo.lbgonzalez.fragantify.dto;
+package ar.edu.huergo.lbgonzalez.fragantify.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

@@ -1,4 +1,4 @@
-package main.java.ar.edu.huergo.lbgonzalez.fragantify.repository;
+package ar.edu.huergo.lbgonzalez.fragantify.repository;
 
 import java.util.Optional;
 

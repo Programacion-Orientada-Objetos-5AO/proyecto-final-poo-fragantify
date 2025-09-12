@@ -3,7 +3,6 @@ package ar.edu.huergo.lbgonzalez.fragantify.repository;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
-import java.util.Optional;
 
 import ar.edu.huergo.lbgonzalez.fragantify.entity.Perfume;
 import org.junit.jupiter.api.*;
