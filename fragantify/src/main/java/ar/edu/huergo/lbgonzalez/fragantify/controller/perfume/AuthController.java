@@ -1,81 +1,48 @@
-package main.java.ar.edu.huergo.lbgonzalez.fragantify.controller.perfume;
+package ar.edu.huergo.lbgonzalez.fragantify.controller.perfume;
 
-import jakarta.validation.Valid;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
-
-import ar.edu.huergo.lbgonzalez.fragantify.dto.LoginRequest;
-import ar.edu.huergo.lbgonzalez.fragantify.dto.AuthResponse;
-import ar.edu.huergo.lbgonzalez.fragantify.dto.RegisterRequest;
-import ar.edu.huergo.lbgonzalez.fragantify.config.JwtTokenService;
-import ar.edu.huergo.lbgonzalez.fragantify.entity.AppUser;
-import ar.edu.huergo.lbgonzalez.fragantify.entity.Rol;
-import ar.edu.huergo.lbgonzalez.fragantify.repository.AppUserRepository;
-import ar.edu.huergo.lbgonzalez.fragantify.repository.RolRepository;
-
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Set;
+import ar.edu.huergo.lbgonzalez.fragantify.dto.security.LoginDTO;
+import ar.edu.huergo.lbgonzalez.fragantify.service.security.JwtTokenService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtTokenService jwtTokenService;
-    private final AppUserRepository appUserRepository;
-    private final RolRepository rolRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final UserDetailsService userDetailsService;
 
-    public AuthController(AuthenticationManager authenticationManager,
-                          JwtTokenService jwtTokenService,
-                          AppUserRepository appUserRepository,
-                          RolRepository rolRepository,
-                          PasswordEncoder passwordEncoder) {
-        this.authenticationManager = authenticationManager;
-        this.jwtTokenService = jwtTokenService;
-        this.appUserRepository = appUserRepository;
-        this.rolRepository = rolRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
 
-    // === LOGIN ===
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-            );
+    public ResponseEntity<Map<String, String>> login(@RequestBody @Valid LoginDTO request) {
+        // 1) Autenticar credenciales username/password (lanza excepción si no son válidas)
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.username(), request.password()));
 
-            String token = jwtTokenService.generateToken(authentication.getName());
-            return ResponseEntity.ok(new AuthResponse(token));
-        } catch (AuthenticationException ex) {
-            return ResponseEntity.status(401).build();
-        }
-    }
-
-    // === REGISTER ===
-    @PostMapping("/register")
-    public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest request) {
-        if (appUserRepository.findByUsername(request.getUsername()).isPresent()) {
-            return ResponseEntity.badRequest().body("El usuario ya existe");
-        }
-
-        // Rol por defecto: USER
-        Rol userRole = rolRepository.findByNombre("USER")
-                .orElseGet(() -> rolRepository.save(new Rol("USER")));
-
-        AppUser newUser = new AppUser();
-        newUser.setUsername(request.getUsername());
-        newUser.setPassword(passwordEncoder.encode(request.getPassword()));
-        newUser.setRoles(Set.of(userRole));
-
-        appUserRepository.save(newUser);
-
-        return ResponseEntity.ok("Usuario registrado con éxito");
+        // 2) Cargar UserDetails y derivar roles/authorities
+        UserDetails userDetails = userDetailsService.loadUserByUsername(request.username());
+        List<String> roles =
+                userDetails.getAuthorities().stream().map(a -> a.getAuthority()).toList();
+        // 3) Generar token JWT firmado con el username como subject y los roles como claims
+        String token = jwtTokenService.generarToken(userDetails, roles);
+        // 4) Responder con el token (el cliente deberá enviarlo en el header Authorization)
+        return ResponseEntity.ok(Map.of("token", token));
     }
 }
+
+

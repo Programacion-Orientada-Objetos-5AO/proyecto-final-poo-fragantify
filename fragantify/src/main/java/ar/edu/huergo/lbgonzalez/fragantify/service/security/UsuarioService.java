@@ -1,45 +1,42 @@
-package main.java.ar.edu.huergo.lbgonzalez.fragantify.security;
+package ar.edu.huergo.lbgonzalez.fragantify.service.security;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import ar.edu.huergo.lbgonzalez.fragantify.entity.AppUser;
-import ar.edu.huergo.lbgonzalez.fragantify.entity.Rol;
-import ar.edu.huergo.lbgonzalez.fragantify.repository.AppUserRepository;
+import ar.edu.huergo.lbgonzalez.fragantify.entity.security.Rol;
+import ar.edu.huergo.lbgonzalez.fragantify.entity.security.Usuario;
+import ar.edu.huergo.lbgonzalez.fragantify.repository.security.RolRepository;
+import ar.edu.huergo.lbgonzalez.fragantify.repository.security.UsuarioRepository;
+import lombok.RequiredArgsConstructor;
 
 @Service
-public class CustomUserDetailsService implements UserDetailsService {
+@RequiredArgsConstructor
+public class UsuarioService {
+    private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final RolRepository rolRepository;
 
-    private final AppUserRepository appUserRepository;
-
-    public CustomUserDetailsService(AppUserRepository appUserRepository) {
-        this.appUserRepository = appUserRepository;
+    public List<Usuario> getAllUsuarios() {
+        return usuarioRepository.findAll();
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        AppUser user = appUserRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
+    public Usuario registrar(Usuario usuario, String password, String verificacionPassword) {
+        if (password == null || verificacionPassword == null) {
+            throw new IllegalArgumentException("Las contraseñas no pueden ser null");
+        }
+        if (!password.equals(verificacionPassword)) {
+            throw new IllegalArgumentException("Las contraseñas no coinciden");
+        }
+        if (usuarioRepository.existsByUsername(usuario.getUsername())) {
+            throw new IllegalArgumentException("El nombre de usuario ya está en uso");
+        }
 
-        return new User(
-                user.getUsername(),
-                user.getPassword(),
-                mapRolesToAuthorities(user.getRoles())
-        );
-    }
-
-    private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Set<Rol> roles) {
-        return roles.stream()
-                .map(rol -> new SimpleGrantedAuthority("ROLE_" + rol.getNombre()))
-                .collect(Collectors.toList());
+        usuario.setPassword(passwordEncoder.encode(password));
+        Rol rolCliente = rolRepository.findByNombre("CLIENTE").orElseThrow(() -> new IllegalArgumentException("Rol 'CLIENTE' no encontrado"));
+        usuario.setRoles(Set.of(rolCliente));
+        return usuarioRepository.save(usuario);
     }
 }

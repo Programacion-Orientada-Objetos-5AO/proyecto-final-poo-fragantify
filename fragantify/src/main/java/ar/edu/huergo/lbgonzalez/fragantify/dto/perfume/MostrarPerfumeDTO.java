@@ -1,4 +1,4 @@
-package ar.edu.huergo.lbgonzalez.fragantify.dto;
+package ar.edu.huergo.lbgonzalez.fragantify.dto.perfume;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

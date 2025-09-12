@@ -1,78 +1,78 @@
 package ar.edu.huergo.lbgonzalez.fragantify.config;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
 
-import javax.crypto.SecretKey;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
+import ar.edu.huergo.lbgonzalez.fragantify.service.security.JwtTokenService;
 
-@Service
-public class JwtTokenService {
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 
-    private final String secret;
-    private final long expirationMs;
-    private final SecretKey signingKey;
+@Component
+@RequiredArgsConstructor
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    public JwtTokenService() {
-        // Usá una clave >= 32 bytes (256 bits). Cambiala en prod.
-        this.secret = "mi-clave-secreta-para-jwt-que-debe-ser-lo-suficientemente-larga";
-        this.expirationMs = 3600000; // 1 hora
-        this.signingKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-    }
+    private final JwtTokenService jwtTokenService;
+    private final UserDetailsService userDetailsService;
 
-    // Constructor para tests
-    public JwtTokenService(String secret, long expirationMs) {
-        this.secret = secret;
-        this.expirationMs = expirationMs;
-        this.signingKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-    }
+    @Override
+    // Este método se ejecuta en cada solicitud HTTP que llega a la aplicación.
+    // Flujo resumido del filtro:
+    // 1) Lee el header Authorization y extrae el token si comienza con "Bearer ".
+    // 2) Usa JwtTokenService para obtener el username del token.
+    // 3) Si no hay autenticación previa en el contexto y el token es válido,
+    // crea un UsernamePasswordAuthenticationToken con las autoridades del usuario
+    // y lo coloca en el SecurityContext.
+    // 4) Continúa la cadena de filtros para que el request llegue al controlador.
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+            FilterChain filterChain) throws ServletException, IOException {
 
-    public String generarToken(UserDetails user, List<String> roles) {
-        Date ahora = new Date();
-        Date expira = new Date(ahora.getTime() + expirationMs);
+        String authHeader = request.getHeader("Authorization"); //Obtiene el header Authorization
+        // Verifica si el header no es nulo y comienza con "Bearer "
+        // (es el formato estándar para tokens JWT).
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            String username = null;
+            // Intenta extraer el username del token usando JwtTokenService.
+            // Si falla, username se queda como null.
+            try {
+                username = jwtTokenService.extraerUsername(token);
+            } catch (Exception ignored) {
+            }
 
-        Map<String, Object> claims = Map.of("roles", roles == null ? List.of() : roles);
-
-        return Jwts.builder()
-                .claims(claims)
-                .subject(user.getUsername())
-                .issuedAt(ahora)
-                .expiration(expira)
-                .signWith(signingKey)               // <- SecretKey
-                .compact();
-    }
-
-    public String extraerUsername(String token) {
-        return parseClaims(token).getSubject();
-    }
-
-    public boolean esTokenValido(String token, UserDetails user) {
-        try {
-            Claims claims = parseClaims(token);
-            String subject = claims.getSubject();
-            Date exp = claims.getExpiration();
-            return subject != null
-                    && subject.equals(user.getUsername())
-                    && exp != null
-                    && exp.after(new Date());
-        } catch (Exception e) {
-            return false;
+            // Si hay un username y no hay autenticación previa en el contexto,
+            // carga los detalles del usuario desde el UserDetailsService.
+            // Si el token es válido, crea un UsernamePasswordAuthenticationToken
+            // con las autoridades del usuario y lo coloca en el SecurityContext.
+            // Esto permite que el usuario esté autenticado para el resto del request.
+            // Si el token no es válido, no se hace nada y el request sigue sin autenticación.
+            if (username != null
+                    && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                if (jwtTokenService.esTokenValido(token, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(userDetails, null,
+                                    userDetails.getAuthorities());
+                    authToken
+                            .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
+            }
         }
-    }
 
-    private Claims parseClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(signingKey)           
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        filterChain.doFilter(request, response);
     }
 }
+
+

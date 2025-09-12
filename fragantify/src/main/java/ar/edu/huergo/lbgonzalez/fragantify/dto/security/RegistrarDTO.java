@@ -1,40 +1,21 @@
-package main.java.ar.edu.huergo.lbgonzalez.fragantify.security;
+package ar.edu.huergo.lbgonzalez.fragantify.dto.security;
 
 import jakarta.validation.constraints.NotBlank;
 
 /**
  * DTO que representa la petición de login.
  */
-public class LoginRequest {
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Pattern;
 
-    @NotBlank
-    private String username;
-
-    @NotBlank
-    private String password;
-
-    public LoginRequest() {
-    }
-
-    public LoginRequest(String username, String password) {
-        this.username = username;
-        this.password = password;
-    }
-
-    // Getters y Setters
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
+public record RegistrarDTO(
+        @NotBlank(message = "El nombre de usuario es requerido")
+        @Email(message = "El nombre de usuario debe ser un email válido") 
+        String username,
+        @NotBlank(message = "La contraseña es requerida") 
+        @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{16,}$", message = "La contraseña debe tener al menos 16 caracteres, una mayúscula, una minúscula, un número y un carácter especial")
+        String password,
+        @NotBlank(message = "La verificación de contraseña es requerida")
+        @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{16,}$", message = "La verificación de contraseña debe tener al menos 16 caracteres, una mayúscula, una minúscula, un número y un carácter especial")
+        String verificacionPassword) {
 }

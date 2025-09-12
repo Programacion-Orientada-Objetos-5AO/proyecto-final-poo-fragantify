@@ -1,19 +1,14 @@
-package ar.edu.huergo.lbgonzalez.fragantify.repository;
+package ar.edu.huergo.lbgonzalez.fragantify.repository.security;
 
 import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
-import ar.edu.huergo.lbgonzalez.fragantify.entity.AppUser;
+import ar.edu.huergo.lbgonzalez.fragantify.entity.security.Usuario;
 
-@Repository
-public interface AppUserRepository extends JpaRepository<AppUser, Long> {
-
-    // Buscar por email (para login y validaciones)
-    Optional<AppUser> findByEmail(String email);
-
-    Optional<AppUser> findByUsername(String username);
-
-
-    boolean existsByEmail(String email);
+public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
+    Optional<Usuario> findByUsername(String username);
+    boolean existsByUsername(String username);
 }
+
+

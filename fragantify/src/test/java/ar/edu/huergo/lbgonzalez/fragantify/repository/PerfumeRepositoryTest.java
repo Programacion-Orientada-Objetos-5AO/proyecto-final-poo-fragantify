@@ -1,85 +1,141 @@
 package ar.edu.huergo.lbgonzalez.fragantify.repository;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
-import ar.edu.huergo.lbgonzalez.fragantify.entity.Perfume;
-import org.junit.jupiter.api.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.*;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@DataJpaTest
-@DisplayName("Tests de Integración - PerfumeRepository")
-class PerfumeRepositoryTest {
+import ar.edu.huergo.lbgonzalez.fragantify.entity.perfume.Perfume;
+import ar.edu.huergo.lbgonzalez.fragantify.repository.perfume.PerfumeRepository;
+import ar.edu.huergo.lbgonzalez.fragantify.service.perfume.PerfumeService;
+import jakarta.persistence.EntityNotFoundException;
 
-    @Autowired
-    private TestEntityManager entityManager;
+/**
+ * Tests de unidad para PerfumeService
+ */
+@ExtendWith(MockitoExtension.class)
+@DisplayName("Tests de Unidad - PerfumeService")
+class PerfumeServiceTest {
 
-    @Autowired
+    @Mock
     private PerfumeRepository perfumeRepository;
 
-    private Perfume p1;
-    private Perfume p2;
-    private Perfume p3;
+    @InjectMocks
+    private PerfumeService perfumeService;
+
+    private Perfume perfumeEjemplo;
 
     @BeforeEach
     void setUp() {
-        // Seed: 3 perfumes
-        p1 = new Perfume("Tommy", "Tommy Hilfiger", 150.0);
-        p1 = entityManager.persistAndFlush(p1);
-
-        p2 = new Perfume("Tom Ford Noir", "Tom Ford", 350.0);
-        p2 = entityManager.persistAndFlush(p2);
-
-        p3 = new Perfume("Acqua di Gio", "Giorgio Armani", 250.0);
-        p3 = entityManager.persistAndFlush(p3);
-
-        entityManager.clear();
+        perfumeEjemplo = new Perfume();
+        perfumeEjemplo.setId(1L);
+        perfumeEjemplo.setNombre("Aroma Supremo");
+        perfumeEjemplo.setMarca("Fragantify");
+        perfumeEjemplo.setPrecio(155.50);
+        perfumeEjemplo.setFamiliaOlfativa("Amaderada");
     }
 
     @Test
-    @DisplayName("Debería encontrar por nombre conteniendo texto (case-insensitive)")
-    void deberiaEncontrarPorNombreContainingIgnoreCase() {
-        List<Perfume> encontrados = perfumeRepository.findByNombreContainingIgnoreCase("tom");
-        assertNotNull(encontrados);
-        assertEquals(2, encontrados.size());
+    @DisplayName("Debería obtener todos los perfumes correctamente")
+    void deberiaObtenerTodosLosPerfumes() {
+        // Given
+        List<Perfume> perfumesEsperados = Arrays.asList(perfumeEjemplo);
+        when(perfumeRepository.findAll()).thenReturn(perfumesEsperados);
 
-        List<String> nombres = encontrados.stream().map(Perfume::getNombre).toList();
-        assertTrue(nombres.contains("Tommy"));
-        assertTrue(nombres.contains("Tom Ford Noir"));
+        // When
+        List<Perfume> resultado = perfumeService.getPerfumes();
+
+        // Then
+        assertNotNull(resultado);
+        assertEquals(1, resultado.size());
+        assertEquals(perfumeEjemplo.getNombre(), resultado.get(0).getNombre());
+        verify(perfumeRepository, times(1)).findAll();
     }
 
     @Test
-    @DisplayName("Debería encontrar por marca conteniendo texto (case-insensitive)")
-    void deberiaEncontrarPorMarcaContainingIgnoreCase() {
-        List<Perfume> resUpper = perfumeRepository.findByMarcaContainingIgnoreCase("TOM");
-        List<Perfume> resLower = perfumeRepository.findByMarcaContainingIgnoreCase("tom");
-        List<Perfume> resMixed = perfumeRepository.findByMarcaContainingIgnoreCase("ToM");
+    @DisplayName("Debería obtener un perfume por ID cuando existe")
+    void deberiaObtenerPerfumePorIdCuandoExiste() {
+        // Given
+        Long perfumeId = 1L;
+        when(perfumeRepository.findById(perfumeId)).thenReturn(Optional.of(perfumeEjemplo));
 
-        assertEquals(2, resUpper.size());
-        assertEquals(2, resLower.size());
-        assertEquals(2, resMixed.size());
+        // When
+        Perfume resultado = perfumeService.getPerfume(perfumeId)
+                .orElseThrow(() -> new EntityNotFoundException("Perfume no encontrado"));
+
+        // Then
+        assertNotNull(resultado);
+        assertEquals(perfumeEjemplo.getId(), resultado.getId());
+        assertEquals(perfumeEjemplo.getNombre(), resultado.getNombre());
+        verify(perfumeRepository, times(1)).findById(perfumeId);
     }
 
     @Test
-    @DisplayName("Debería retornar lista vacía cuando no hay coincidencias")
-    void deberiaRetornarListaVaciaCuandoNoHayCoincidencias() {
-        List<Perfume> encontrados = perfumeRepository.findByNombreContainingIgnoreCase("inexistente");
-        assertNotNull(encontrados);
-        assertTrue(encontrados.isEmpty());
+    @DisplayName("Debería lanzar EntityNotFoundException cuando el perfume no existe")
+    void deberiaLanzarExcepcionCuandoPerfumeNoExiste() {
+        // Given
+        Long perfumeIdInexistente = 999L;
+        when(perfumeRepository.findById(perfumeIdInexistente)).thenReturn(Optional.empty());
+
+        // When & Then
+        EntityNotFoundException ex = assertThrows(
+                EntityNotFoundException.class,
+                () -> perfumeService.getPerfume(perfumeIdInexistente)
+                        .orElseThrow(() -> new EntityNotFoundException("Perfume no encontrado"))
+        );
+
+        assertEquals("Perfume no encontrado", ex.getMessage());
+        verify(perfumeRepository, times(1)).findById(perfumeIdInexistente);
     }
 
     @Test
-    @DisplayName("Debería buscar por precio en rango")
-    void deberiaBuscarPorPrecioEntre() {
-        // [200, 400] → Tom Ford Noir (350) y Acqua di Gio (250)
-        List<Perfume> rango = perfumeRepository.findByPrecioBetween(200.0, 400.0);
-        assertEquals(2, rango.size());
+    @DisplayName("Debería crear un perfume correctamente")
+    void deberiaCrearPerfumeCorrectamente() {
+        // Given
+        Perfume nuevoPerfume = new Perfume("Cítrico Boreal", "Marca X", 120.00, "Cítrica");
+        when(perfumeRepository.save(any(Perfume.class))).thenReturn(nuevoPerfume);
 
-        List<String> nombres = rango.stream().map(Perfume::getNombre).toList();
-        assertTrue(nombres.contains("Tom Ford Noir"));
-        assertTrue(nombres.contains("Acqua di Gio"));
+        // When
+        Perfume resultado = perfumeService.crearPerfume(nuevoPerfume);
+
+        // Then
+        assertNotNull(resultado);
+        assertEquals(nuevoPerfume.getNombre(), resultado.getNombre());
+        verify(perfumeRepository, times(1)).save(nuevoPerfume);
+    }
+
+    @Test
+    @DisplayName("Debería actualizar un perfume existente correctamente")
+    void deberiaActualizarPerfumeExistente() {
+        // Given
+        Long perfumeId = 1L;
+        Perfume perfumeActualizado = new Perfume("Ámbar Nocturno", "Marca Y", 180.00, "Oriental");
+
+        when(perfumeRepository.findById(perfumeId)).thenReturn(Optional.of(perfumeEjemplo));
+        when(perfumeRepository.save(any(Perfume.class))).thenReturn(perfumeEjemplo);
+
+        // When
+        Perfume resultado = perfumeService.actualizarPerfume(perfumeId, perfumeActualizado);
+
+        // Then
+        assertNotNull(resultado);
+        verify(perfumeRepository, times(1)).findById(perfumeId);
+        verify(perfumeRepository, times(1)).save(perfumeEjemplo);
+
+        assertEquals(perfumeActualizado.getNombre(), perfumeEjemplo.getNombre());
+        assertEquals(perfumeActualizado.getMarca(), perfumeEjemplo.getMarca());
+        assertEquals(perfumeActualizado.getPrecio(), perfumeEjemplo.getPrecio());
+        assertEquals(perfumeActualizado.getFamiliaOlfativa(), perfumeEjemplo.getFamiliaOlfativa());
     }
 }

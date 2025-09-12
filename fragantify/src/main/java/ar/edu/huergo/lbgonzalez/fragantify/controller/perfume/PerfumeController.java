@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import ar.edu.huergo.lbgonzalez.fragantify.dto.CrearActualizarPerfumeDTO;
-import ar.edu.huergo.lbgonzalez.fragantify.dto.MostrarPerfumeDTO;
-import ar.edu.huergo.lbgonzalez.fragantify.entity.Perfume;
-import ar.edu.huergo.lbgonzalez.fragantify.mapper.PerfumeMapper;
-import ar.edu.huergo.lbgonzalez.fragantify.service.PerfumeService;
+import ar.edu.huergo.lbgonzalez.fragantify.dto.perfume.CrearActualizarPerfumeDTO;
+import ar.edu.huergo.lbgonzalez.fragantify.dto.perfume.MostrarPerfumeDTO;
+import ar.edu.huergo.lbgonzalez.fragantify.entity.perfume.Perfume;
+import ar.edu.huergo.lbgonzalez.fragantify.mapper.perfume.PerfumeMapper;
+import ar.edu.huergo.lbgonzalez.fragantify.service.perfume.PerfumeService;
 import jakarta.validation.Valid;
 
 @RestController

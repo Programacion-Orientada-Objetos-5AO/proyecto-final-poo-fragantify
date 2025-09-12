@@ -1,4 +1,4 @@
-package ar.edu.huergo.lbgonzalez.fragantify.entity;
+package ar.edu.huergo.lbgonzalez.fragantify.entity.perfume;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

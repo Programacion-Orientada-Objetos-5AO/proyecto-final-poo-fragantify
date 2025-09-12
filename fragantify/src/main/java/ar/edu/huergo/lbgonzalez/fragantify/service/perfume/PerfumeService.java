@@ -1,4 +1,4 @@
-package ar.edu.huergo.lbgonzalez.fragantify.service;
+package ar.edu.huergo.lbgonzalez.fragantify.service.perfume;
 
 import java.util.List;
 import java.util.Optional;
@@ -6,9 +6,9 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import ar.edu.huergo.lbgonzalez.fragantify.entity.Perfume;
+import ar.edu.huergo.lbgonzalez.fragantify.entity.perfume.Perfume;
 import ar.edu.huergo.lbgonzalez.fragantify.exception.PerfumeNotFoundException;
-import ar.edu.huergo.lbgonzalez.fragantify.repository.PerfumeRepository;
+import ar.edu.huergo.lbgonzalez.fragantify.repository.perfume.PerfumeRepository;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import jakarta.validation.ConstraintViolation;

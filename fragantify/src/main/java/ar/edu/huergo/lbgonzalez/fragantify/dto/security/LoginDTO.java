@@ -1,34 +1,17 @@
-package main.java.ar.edu.huergo.lbgonzalez.fragantify.security;
+package ar.edu.huergo.lbgonzalez.fragantify.dto.security;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
 /**
  * DTO que devuelve el token JWT al cliente.
  */
-public class AuthResponse {
-
-    private String token;
-    private String type = "Bearer";
-
-    public AuthResponse() {
-    }
-
-    public AuthResponse(String token) {
-        this.token = token;
-    }
-
-    // Getters y Setters
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
+public record LoginDTO(
+        @NotBlank(message = "El nombre de usuario es requerido")
+        @Email(message = "El nombre de usuario debe ser un email válido") 
+        String username,
+        @NotBlank(message = "La contraseña es requerida") 
+        @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{16,}$", message = "La contraseña debe tener al menos 16 caracteres, una mayúscula, una minúscula, un número y un carácter especial")
+        String password) {
 }
