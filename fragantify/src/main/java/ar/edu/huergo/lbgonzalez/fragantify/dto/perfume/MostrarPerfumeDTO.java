@@ -7,9 +7,8 @@ import lombok.EqualsAndHashCode;
 public class MostrarPerfumeDTO extends PerfumeDto {
     private String categoriaNombre;
 
-    public MostrarPerfumeDTO(Long id, String nombre, String marca, Double precio, String categoriaNombre) {
+    public MostrarPerfumeDTO(Long id, String nombre, String marca, Double precio ) {
         super(id, nombre, marca, precio);
-        this.categoriaNombre = categoriaNombre;
     }
 }
 

@@ -17,8 +17,7 @@ public class PerfumeMapper {
             perfume.getId(),
             perfume.getNombre(),
             perfume.getMarca(),
-            perfume.getPrecio(),
-            null // categoriaNombre, assuming not implemented yet
+            perfume.getPrecio()
         );
     }
 
