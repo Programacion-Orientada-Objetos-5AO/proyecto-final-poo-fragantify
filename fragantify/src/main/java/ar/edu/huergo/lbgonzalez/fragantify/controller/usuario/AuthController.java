@@ -1,4 +1,4 @@
-package ar.edu.huergo.lbgonzalez.fragantify.controller.perfume;
+package ar.edu.huergo.lbgonzalez.fragantify.controller.usuario;
 
 import java.util.List;
 import java.util.Map;
