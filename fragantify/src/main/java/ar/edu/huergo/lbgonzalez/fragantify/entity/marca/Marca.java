@@ -19,7 +19,9 @@ import lombok.NoArgsConstructor;
 @Table(name = "marca ")
 @Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class Marca {
-    //-idMarca
+    public Marca(String nombre2, String paisOrigen2, int añoFundacion2, String descripcion2) {
+    }
+  //-idMarca
     //-nombre
     //-paisOrigen
     //-añoFundacion

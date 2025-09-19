@@ -2,48 +2,48 @@ package ar.edu.huergo.lbgonzalez.fragantify.service.marcas;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
-import javax.xml.validation.Validator;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ar.edu.huergo.lbgonzalez.fragantify.entity.marca.Marca;
 import ar.edu.huergo.lbgonzalez.fragantify.repository.marca.MarcasRepository;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
+import jakarta.validation.Validator;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class MarcasService {
 
-
-
-    @Autowired
-    private MarcasRepository marcasRepository;
-
-    @Autowired
-    private Validator validator;
+    private final MarcasRepository marcasRepository;
+    private final Validator validator; 
 
     public List<Marca> getMarcas() {
         return marcasRepository.findAll();
     }
-
 
     public Optional<Marca> getMarca(Long id) {
         return marcasRepository.findById(id);
     }
 
     public Marca crearMarca(@Valid Marca marca) {
-        //validateMarca(marca);
+        validateMarca(marca);
         return marcasRepository.save(marca);
     }
 
-
     public Marca actualizarMarca(Long id, @Valid Marca marca) {
-        //validateMarca(marca);
+        validateMarca(marca);
         Marca existing = marcasRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Marca no encontrada con id " + id));
+
         existing.setNombre(marca.getNombre());
         existing.setPaisOrigen(marca.getPaisOrigen());
+        existing.setAñoFundacion(marca.getAñoFundacion());
+        existing.setDescripcion(marca.getDescripcion());
+
         return marcasRepository.save(existing);
     }
 
@@ -54,4 +54,10 @@ public class MarcasService {
         marcasRepository.deleteById(id);
     }
 
+    private void validateMarca(Marca marca) {
+        Set<ConstraintViolation<Marca>> violations = validator.validate(marca);
+        if (!violations.isEmpty()) {
+            throw new ConstraintViolationException(violations);
+        }
+    }
 }
