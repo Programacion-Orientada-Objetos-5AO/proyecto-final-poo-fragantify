@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Fragantify - App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body{font-family:system-ui;background:#fafafa;padding:24px}
+    header{display:flex;gap:12px;align-items:center;margin-bottom:16px}
+    header h2{margin-right:auto}
+    table{border-collapse:collapse;width:100%;background:#fff}
+    th,td{border:1px solid #eee;padding:8px;text-align:left}
+    thead{background:#f3f3f3}
+    form{display:grid;gap:8px;grid-template-columns:repeat(4, minmax(0, 1fr));align-items:end;margin:12px 0}
+    form input{padding:8px}
+    form button{grid-column:span 4;padding:10px;background:#111;color:#fff;border:0;border-radius:8px;cursor:pointer}
+    .card{background:#fff;border:1px solid #eee;border-radius:12px;padding:16px;margin-bottom:16px}
+    .muted{color:#666}
+  </style>
+</head>
+<body>
+  <header>
+    <h2>Fragantify – Panel</h2>
+    <span id="auth" class="muted"></span>
+    <button id="logout">Salir</button>
+  </header>
+
+  <div class="card">
+    <h3>Crear perfume</h3>
+    <form id="crearPerfumeForm">
+      <label>Nombre <input name="nombre" required></label>
+      <label>Marca <input name="marca" required></label>
+      <label>Precio <input name="precio" type="number" step="0.01" required></label>
+      <label>Familia <input name="familiaOlfativa"></label>
+      <button type="submit">Crear</button>
+    </form>
+    <div id="crearMsg" class="muted"></div>
+  </div>
+
+  <div class="card">
+    <h3>Perfumes</h3>
+    <button id="reload">Recargar</button>
+    <table>
+      <thead><tr><th>ID</th><th>Nombre</th><th>Marca</th><th>Precio</th></tr></thead>
+      <tbody id="perfumesBody"></tbody>
+    </table>
+  </div>
+
+  <script>
+    // ===== util token =====
+    const token = localStorage.getItem('jwt') || '';
+    const authSpan = document.getElementById('auth');
+    const logoutBtn = document.getElementById('logout');
+
+    if (!token) {
+      // si no hay token, redirigimos al login
+      window.location.replace('/login.html'); // o '/login' si hiciste una vista thymeleaf
+    } else {
+      authSpan.textContent = 'Autenticado ✔ (JWT en localStorage)';
+    }
+
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem('jwt');
+      window.location.replace('/login.html');
+    });
+
+    async function api(path, options = {}) {
+      const headers = Object.assign({'Content-Type':'application/json'}, options.headers||{});
+      headers['Authorization'] = 'Bearer ' + (localStorage.getItem('jwt') || '');
+      const res = await fetch(path, {...options, headers});
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`HTTP ${res.status} - ${text}`);
+      }
+      if (res.status === 204) return null;
+      return res.json();
+    }
+
+    // ===== listar perfumes =====
+    const tbody = document.getElementById('perfumesBody');
+    async function cargarPerfumes() {
+      try {
+        const data = await api('/api/perfumes');
+        tbody.innerHTML = '';
+        data.forEach(p => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${p.id}</td><td>${p.nombre}</td><td>${p.marca}</td><td>${p.precio}</td>`;
+          tbody.appendChild(tr);
+        });
+      } catch (e) {
+        alert('Error listando perfumes: ' + e.message);
+      }
+    }
+    document.getElementById('reload').addEventListener('click', cargarPerfumes);
+    cargarPerfumes();
+
+    // ===== crear perfume =====
+    const crearForm = document.getElementById('crearPerfumeForm');
+    const crearMsg  = document.getElementById('crearMsg');
+
+    crearForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      crearMsg.textContent = '';
+      const fd = new FormData(crearForm);
+      const body = JSON.stringify({
+        nombre: fd.get('nombre'),
+        marca: fd.get('marca'),
+        precio: parseFloat(fd.get('precio')),
+        familiaOlfativa: fd.get('familiaOlfativa') || null
+      });
+      try {
+        await api('/api/perfumes', { method: 'POST', body });
+        crearMsg.textContent = 'Perfume creado ✔';
+        crearForm.reset();
+        cargarPerfumes();
+      } catch (e) {
+        crearMsg.textContent = 'Error: ' + e.message;
+      }
+    });
+  </script>
+</body>
+</html>

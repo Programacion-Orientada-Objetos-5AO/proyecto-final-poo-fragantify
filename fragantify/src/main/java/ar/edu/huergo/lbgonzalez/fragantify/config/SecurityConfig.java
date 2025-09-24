@@ -2,6 +2,7 @@ package ar.edu.huergo.lbgonzalez.fragantify.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,35 +28,93 @@ import ar.edu.huergo.lbgonzalez.fragantify.repository.security.UsuarioRepository
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    /* =======================
+       1) API: JWT, stateless
+       ======================= */
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http,
-            JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
-        // Configuración central de Spring Security con JWT:
-        // - Deshabilitamos CSRF porque no usamos cookies/sesiones en un API stateless.
-        // - Forzamos manejo de sesión sin estado (los datos de auth vienen en el JWT).
-        // - Permitimos libre acceso solo al login, el resto requiere autenticación y roles.
-        // - Registramos nuestro filtro JWT antes del filtro de usuario/contraseña.
-        http.csrf(csrf -> csrf.disable())
-                .sessionManagement(
-                        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/usuarios/registrar").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/pedidos").hasRole("CLIENTE")
-                        .requestMatchers(HttpMethod.GET, "/api/pedidos/reporte").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/platos/**")
-                        .hasAnyRole("ADMIN", "CLIENTE").requestMatchers("/api/ingredientes/**")
-                        .hasRole("ADMIN").requestMatchers(HttpMethod.POST, "/api/platos/**")
-                        .hasRole("ADMIN").requestMatchers(HttpMethod.PUT, "/api/platos/**")
-                        .hasRole("ADMIN").requestMatchers(HttpMethod.DELETE, "/api/platos/**")
-                        .hasRole("ADMIN").anyRequest().authenticated())
-                .exceptionHandling(
-                        exceptions -> exceptions.accessDeniedHandler(accessDeniedHandler())
-                                .authenticationEntryPoint(authenticationEntryPoint()))
-                .addFilterBefore(jwtAuthenticationFilter,
-                        UsernamePasswordAuthenticationFilter.class);
+    @Order(1)
+    SecurityFilterChain apiSecurity(HttpSecurity http,
+                                    JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
+        http
+            .securityMatcher("/api/**")
+            .csrf(csrf -> csrf.disable())
+            .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                // --- AUTH ---
+                .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+
+                // --- PERFUMES ---
+                .requestMatchers(HttpMethod.GET,    "/api/perfumes/**").permitAll()           // catálogo público
+                .requestMatchers(HttpMethod.POST,   "/api/perfumes/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT,    "/api/perfumes/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/perfumes/**").hasRole("ADMIN")
+
+                // --- CUENTAS (datos sensibles) ---
+                .requestMatchers(HttpMethod.GET,    "/api/cuentas/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST,   "/api/cuentas/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT,    "/api/cuentas/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/cuentas/**").hasRole("ADMIN")
+
+                // --- MARCAS ---
+                .requestMatchers(HttpMethod.GET,    "/api/marcas/**").permitAll()
+                .requestMatchers(HttpMethod.POST,   "/api/marcas/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT,    "/api/marcas/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/marcas/**").hasRole("ADMIN")
+
+                // --- RECOMENDACIONES ---
+                .requestMatchers(HttpMethod.GET,    "/api/recomendaciones/**").permitAll()
+                .requestMatchers(HttpMethod.POST,   "/api/recomendaciones/**").hasAnyRole("CLIENTE", "ADMIN")
+                .requestMatchers(HttpMethod.PUT,    "/api/recomendaciones/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/recomendaciones/**").hasRole("ADMIN")
+
+                // cualquier otro /api/** requiere JWT válido
+                .anyRequest().authenticated()
+            )
+            .exceptionHandling(ex -> ex
+                .accessDeniedHandler(accessDeniedHandler())
+                .authenticationEntryPoint(authenticationEntryPoint())
+            )
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
+
+    /* =====================================
+       2) Web (Thymeleaf): formLogin, stateful
+       ===================================== */
+        @Bean
+        @Order(2)
+        SecurityFilterChain webSecurity(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/**")
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                // ⬇️ agrega estas dos líneas
+                .requestMatchers("/login.html", "/app.html").permitAll()
+                // estáticos habituales
+                .requestMatchers("/", "/login", "/favicon.ico",
+                                "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+                .anyRequest().authenticated()
+                )
+                .formLogin(login -> login
+                .loginPage("/login")
+                .loginProcessingUrl("/login")
+                .defaultSuccessUrl("/", true)
+                .failureUrl("/login?error=true")
+                .permitAll()
+                )
+                .logout(lo -> lo
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login?logout=true")
+                .permitAll()
+                )
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
+
+        return http.build();
+        }
+
+
+    /* ===== infra común ===== */
 
     @Bean
     PasswordEncoder passwordEncoder() {
@@ -64,61 +123,63 @@ public class SecurityConfig {
 
     @Bean
     AccessDeniedHandler accessDeniedHandler() {
-        return (request, response, accessDeniedException) -> {
+        return (request, response, ex) -> {
             response.setStatus(403);
             response.setContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE);
-
             ObjectMapper mapper = new ObjectMapper();
-            String jsonResponse = mapper.writeValueAsString(java.util.Map.of("type",
-                    "https://http.dev/problems/access-denied", "title", "Acceso denegado", "status",
-                    403, "detail", "No tienes permisos para acceder a este recurso"));
-
-            response.getWriter().write(jsonResponse);
+            String body = mapper.writeValueAsString(
+                java.util.Map.of(
+                    "type", "https://http.dev/problems/access-denied",
+                    "title", "Acceso denegado",
+                    "status", 403,
+                    "detail", "No tienes permisos para acceder a este recurso"
+                )
+            );
+            response.getWriter().write(body);
         };
     }
 
     @Bean
     AuthenticationEntryPoint authenticationEntryPoint() {
-        return (request, response, authException) -> {
+        return (request, response, ex) -> {
             response.setStatus(401);
             response.setContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE);
-
             ObjectMapper mapper = new ObjectMapper();
-            String jsonResponse = mapper.writeValueAsString(java.util.Map.of("type",
-                    "https://http.dev/problems/unauthorized", "title", "No autorizado", "status",
-                    401, "detail", "Credenciales inválidas o faltantes"));
-
-            response.getWriter().write(jsonResponse);
+            String body = mapper.writeValueAsString(
+                java.util.Map.of(
+                    "type", "https://http.dev/problems/unauthorized",
+                    "title", "No autorizado",
+                    "status", 401,
+                    "detail", "Credenciales inválidas o faltantes"
+                )
+            );
+            response.getWriter().write(body);
         };
     }
 
     @Bean
     UserDetailsService userDetailsService(UsuarioRepository usuarioRepository) {
-        // Adaptamos nuestra entidad Usuario a UserDetails de Spring Security.
         return username -> usuarioRepository.findByUsername(username)
-                .map(usuario -> org.springframework.security.core.userdetails.User
-                        .withUsername(usuario.getUsername()).password(usuario.getPassword())
-                        .roles(usuario.getRoles().stream().map(r -> r.getNombre())
-                                .toArray(String[]::new))
-                        .build())
-                .orElseThrow(
-                        () -> new UsernameNotFoundException("Usuario no encontrado: " + username));
+            .map(usuario -> org.springframework.security.core.userdetails.User
+                .withUsername(usuario.getUsername())
+                .password(usuario.getPassword())
+                .roles(usuario.getRoles().stream().map(r -> r.getNombre()).toArray(String[]::new))
+                .build()
+            )
+            .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
     }
 
     @Bean
-    DaoAuthenticationProvider daoAuthenticationProvider(UserDetailsService userDetailsService,
-            PasswordEncoder passwordEncoder) {
-        // Provider de autenticación que usa nuestro UserDetailsService y el encoder
-        // para validar credentials en /api/auth/login.
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
-        provider.setPasswordEncoder(passwordEncoder);
+    DaoAuthenticationProvider daoAuthenticationProvider(UserDetailsService uds,
+                                                        PasswordEncoder encoder) {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(uds);
+        provider.setPasswordEncoder(encoder);
         return provider;
     }
 
     @Bean
-    AuthenticationManager authenticationManager(AuthenticationConfiguration configuration)
-            throws Exception {
-        // Exponemos el AuthenticationManager que usará el controlador de login.
-        return configuration.getAuthenticationManager();
+    AuthenticationManager authenticationManager(AuthenticationConfiguration cfg) throws Exception {
+        return cfg.getAuthenticationManager();
     }
 }
