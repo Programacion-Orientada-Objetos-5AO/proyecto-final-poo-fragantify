@@ -48,6 +48,18 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * Manejo de errores al consultar la API pública de Fragella.
+     */
+    @ExceptionHandler(FragellaApiException.class)
+    @ResponseStatus(HttpStatus.BAD_GATEWAY)
+    public ProblemDetail handleFragellaApiException(FragellaApiException ex) {
+        ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.BAD_GATEWAY);
+        problem.setTitle("Error consultando la API de Fragella");
+        problem.setDetail(ex.getMessage());
+        return problem;
+    }
+
+    /**
      * Manejo genérico de cualquier otra excepción.
      */
     @ExceptionHandler(Exception.class)
