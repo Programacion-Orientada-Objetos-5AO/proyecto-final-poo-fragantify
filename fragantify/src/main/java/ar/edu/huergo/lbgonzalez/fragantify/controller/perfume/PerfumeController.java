@@ -32,7 +32,7 @@ public class PerfumeController {
     @Autowired private PerfumeService perfumeService;
     @Autowired private PerfumeMapper perfumeMapper;
 
-    // 👇 Inyectá el service externo (no lo llames estático)
+    // ðŸ‘‡ InyectÃ¡ el service externo (no lo llames estÃ¡tico)
     @Autowired private FragellaFragrancesService fragellaFragrancesService;
 
     @GetMapping
@@ -91,6 +91,11 @@ public class PerfumeController {
         return ResponseEntity.ok(perfumeMapper.toDTOList(perfumes));
     }
 
+    @GetMapping("/buscar")
+    public ResponseEntity<List<MostrarPerfumeDTO>> buscarPerfumesPorNombre(@RequestParam String nombre) {
+        List<Perfume> perfumes = perfumeService.buscarPerfumesPorNombre(nombre);
+        return ResponseEntity.ok(perfumeMapper.toDTOList(perfumes));
+    }
     @GetMapping("/marca/{marca}")
     public ResponseEntity<List<MostrarPerfumeDTO>> obtenerPerfumesPorMarca(@PathVariable String marca) {
         List<Perfume> perfumes = perfumeService.obtenerPerfumesPorMarca(marca);
@@ -109,3 +114,4 @@ public class PerfumeController {
         return ResponseEntity.ok(perfumeMapper.toDTO(perfume));
     }
 }
+

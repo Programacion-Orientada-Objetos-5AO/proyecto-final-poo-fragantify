@@ -17,7 +17,8 @@ public class PerfumeMapper {
             perfume.getId(),
             perfume.getNombre(),
             perfume.getMarca(),
-            perfume.getPrecio()
+            perfume.getPrecio(),
+            perfume.getFamiliaOlfativa()
         );
     }
 
@@ -25,7 +26,8 @@ public class PerfumeMapper {
         return new Perfume(
             dto.getNombre(),
             dto.getMarca(),
-            dto.getPrecio()
+            dto.getPrecio(),
+            dto.getFamiliaOlfativa()
         );
     }
 
