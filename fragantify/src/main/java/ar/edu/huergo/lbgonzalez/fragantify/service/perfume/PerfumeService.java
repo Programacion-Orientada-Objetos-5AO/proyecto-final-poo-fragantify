@@ -2,8 +2,6 @@ package ar.edu.huergo.lbgonzalez.fragantify.service.perfume;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +12,7 @@ import ar.edu.huergo.lbgonzalez.fragantify.repository.perfume.PerfumeRepository;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import jakarta.validation.ConstraintViolation;
+import java.util.Set;
 
 @Service
 public class PerfumeService {
@@ -34,13 +33,13 @@ public class PerfumeService {
         return perfumeRepository.findById(id);
     }
 
-    // Crear perfume con validacion
+    // Crear perfume con validación
     public Perfume crearPerfume(@Valid Perfume perfume) {
         validatePerfume(perfume);
         return perfumeRepository.save(perfume);
     }
 
-    // Actualizar perfume con validacion
+    // Actualizar perfume con validación
     public Perfume actualizarPerfume(Long id, @Valid Perfume perfume) {
         validatePerfume(perfume);
         Perfume existing = perfumeRepository.findById(id)
@@ -60,33 +59,19 @@ public class PerfumeService {
         perfumeRepository.deleteById(id);
     }
 
-    // Filtrar perfumes con validacion de parametros
+    // Filtrar perfumes con validación de parámetros
     public List<Perfume> filtrarPerfumes(String familiaOlfativa, Double precioMin, Double precioMax) {
         if (precioMin != null && precioMax != null && precioMin > precioMax) {
             throw new IllegalArgumentException("precioMin no puede ser mayor que precioMax");
         }
-
-        List<Perfume> base = (familiaOlfativa != null && !familiaOlfativa.trim().isEmpty())
-            ? perfumeRepository.findByFamiliaOlfativaContainingIgnoreCase(familiaOlfativa.trim())
-            : perfumeRepository.findAll();
-
-        return base.stream()
-            .filter(p -> precioMin == null || p.getPrecio() >= precioMin)
-            .filter(p -> precioMax == null || p.getPrecio() <= precioMax)
-            .collect(Collectors.toList());
+        // Implementar lógica de filtrado real aquí, por ahora devolver todos
+        return perfumeRepository.findAll();
     }
 
-    // Buscar perfumes por nombre
-    public List<Perfume> buscarPerfumesPorNombre(String nombre) {
-        if (nombre == null || nombre.trim().isEmpty()) {
-            throw new IllegalArgumentException("El nombre no puede ser vacio");
-        }
-        return perfumeRepository.findByNombreContainingIgnoreCase(nombre.trim());
-    }
     // Obtener perfumes por marca
     public List<Perfume> obtenerPerfumesPorMarca(String marca) {
         if (marca == null || marca.trim().isEmpty()) {
-            throw new IllegalArgumentException("La marca no puede ser vacia");
+            throw new IllegalArgumentException("La marca no puede ser vacía");
         }
         return perfumeRepository.findByMarcaContainingIgnoreCase(marca);
     }
@@ -94,7 +79,7 @@ public class PerfumeService {
     // Comparar perfumes
     public List<Perfume> compararPerfumes(List<Long> ids) {
         if (ids == null || ids.isEmpty()) {
-            throw new IllegalArgumentException("La lista de IDs no puede estar vacia");
+            throw new IllegalArgumentException("La lista de IDs no puede estar vacía");
         }
         return perfumeRepository.findAllById(ids);
     }
@@ -114,8 +99,7 @@ public class PerfumeService {
             for (ConstraintViolation<Perfume> violation : violations) {
                 sb.append(violation.getPropertyPath()).append(": ").append(violation.getMessage()).append("; ");
             }
-            throw new IllegalArgumentException("Errores de validacion: " + sb.toString());
+            throw new IllegalArgumentException("Errores de validación: " + sb.toString());
         }
     }
 }
-

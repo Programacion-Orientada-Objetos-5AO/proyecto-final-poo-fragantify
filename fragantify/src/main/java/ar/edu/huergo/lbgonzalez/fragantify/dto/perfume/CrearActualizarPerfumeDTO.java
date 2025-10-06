@@ -25,7 +25,4 @@ public class CrearActualizarPerfumeDTO {
     @Positive(message = "El precio debe ser positivo")
     @NotNull(message = "El precio no puede ser nulo")
     private Double precio;
-
-    @Size(max = 100, message = "La familia olfativa debe tener hasta 100 caracteres")
-    private String familiaOlfativa;
 }
