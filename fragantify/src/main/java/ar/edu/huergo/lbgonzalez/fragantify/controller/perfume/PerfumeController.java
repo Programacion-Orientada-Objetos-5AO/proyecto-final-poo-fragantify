@@ -17,11 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import ar.edu.huergo.lbgonzalez.fragantify.dto.perfume.CrearActualizarPerfumeDTO;
-import ar.edu.huergo.lbgonzalez.fragantify.dto.perfume.FragranceDTO;
 import ar.edu.huergo.lbgonzalez.fragantify.dto.perfume.MostrarPerfumeDTO;
 import ar.edu.huergo.lbgonzalez.fragantify.entity.perfume.Perfume;
 import ar.edu.huergo.lbgonzalez.fragantify.mapper.perfume.PerfumeMapper;
-import ar.edu.huergo.lbgonzalez.fragantify.service.api.FragellaFragrancesService;
 import ar.edu.huergo.lbgonzalez.fragantify.service.perfume.PerfumeService;
 import jakarta.validation.Valid;
 
@@ -33,7 +31,6 @@ public class PerfumeController {
     @Autowired private PerfumeMapper perfumeMapper;
 
     // 👇 Inyectá el service externo (no lo llames estático)
-    @Autowired private FragellaFragrancesService fragellaFragrancesService;
 
     @GetMapping
     public ResponseEntity<List<MostrarPerfumeDTO>> obtenerTodosLosPerfumes() {
@@ -48,15 +45,7 @@ public class PerfumeController {
         return ResponseEntity.ok(perfumeMapper.toDTO(perfume));
     }
 
-   @GetMapping("/externos")
-    public ResponseEntity<List<FragranceDTO>> buscarExternos(
-        @RequestParam(name = "search") String search,
-        @RequestParam(name = "limit", required = false) Integer limit) {
-
-    List<FragranceDTO> result = fragellaFragrancesService.searchFragrances(search, limit);
-    return ResponseEntity.ok(result);
-    }
-
+   
 
 
     @PostMapping
