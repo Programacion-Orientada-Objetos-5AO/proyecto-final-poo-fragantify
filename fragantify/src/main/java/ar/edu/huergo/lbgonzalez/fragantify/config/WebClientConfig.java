@@ -10,7 +10,7 @@ public class WebClientConfig {
  @Bean
     public WebClient webClient(WebClient.Builder builder) {
         return builder
-                .baseUrl("https://api.fragella.com")  // base URL de la API
+                .baseUrl("https://api.fragella.com")  
                 .build();
     }
 }

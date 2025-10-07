@@ -16,7 +16,7 @@ public interface PerfumeRepository extends JpaRepository<Perfume, Long> {
     // Busca perfumes cuya marca contenga cierto texto, sin importar mayúsculas
     List<Perfume> findByMarcaContainingIgnoreCase(String marca);
 
-    // 🔥 ESTE es el que falta para tu test
+    // ESTE es el que falta para tu test
     List<Perfume> findByPrecioBetween(double min, double max);
 
     // Busca perfumes cuya familia olfativa contenga cierto texto, sin importar mayúsculas

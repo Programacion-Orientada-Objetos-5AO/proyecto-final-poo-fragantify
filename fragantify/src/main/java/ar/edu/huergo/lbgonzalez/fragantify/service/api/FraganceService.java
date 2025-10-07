@@ -2,6 +2,7 @@ package ar.edu.huergo.lbgonzalez.fragantify.service.api;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,16 +19,21 @@ public class FraganceService {
     @Autowired
     private WebClient webClient;
 
-    public List<Fragance> buscarFragancias(String query) {
+    public List<Fragance> buscarFragancias(Map<String, String> params) {
         Mono<Fragance[]> response = webClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/api/v1/fragrances")
-                        .queryParam("search", query)
-                        .build())
+                .uri(uriBuilder -> {
+                    var builder = uriBuilder.path("/api/v1/fragrances");
+                    params.forEach((key, value) -> {
+                        if (value != null && !value.isBlank()) {
+                            builder.queryParam(key, value);
+                        }
+                    });
+                    return builder.build();
+                })
                 .header("x-api-key", API_KEY)
                 .retrieve()
                 .bodyToMono(Fragance[].class);
 
-        return Arrays.asList(response.block()); // bloquea para respuesta síncrona y convierte array a lista
+        return Arrays.asList(response.block());
     }
 }

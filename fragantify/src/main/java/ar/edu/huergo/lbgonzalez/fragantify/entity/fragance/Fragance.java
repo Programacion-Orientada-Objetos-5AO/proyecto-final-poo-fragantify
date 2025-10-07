@@ -29,10 +29,10 @@ public class Fragance {
     private String gender;
 
     @JsonProperty("Longevity")
-    private Integer longevity; // porcentaje (0-100)
+    private String longevity; // "62%"
 
     @JsonProperty("Sillage")
-    private Integer sillage;   // porcentaje (0-100)
+    private String sillage;   // "45%"   // porcentaje (0-100)
 
     @JsonProperty("General Notes")
     private List<String> generalNotes;
@@ -41,7 +41,7 @@ public class Fragance {
     private List<String> mainAccords;
 
     @JsonProperty("Main Accords Percentage")
-    private Map<String, Double> mainAccordsPercentage;
+    private Map<String, String> mainAccordsPercentage;
 
     @JsonProperty("Notes")
     private Notes notes; // Top / Middle / Base
