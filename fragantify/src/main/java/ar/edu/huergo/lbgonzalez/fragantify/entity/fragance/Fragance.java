@@ -21,7 +21,6 @@ public class Fragance {
     @JsonProperty("Price")
     private String price;
 
-    // Campo con espacio en el nombre:
     @JsonProperty("Image URL")
     private String imageUrl;
 
@@ -29,10 +28,10 @@ public class Fragance {
     private String gender;
 
     @JsonProperty("Longevity")
-    private String longevity; // "62%"
+    private String longevity; 
 
     @JsonProperty("Sillage")
-    private String sillage;   // "45%"   // porcentaje (0-100)
+    private String sillage;  
 
     @JsonProperty("General Notes")
     private List<String> generalNotes;
@@ -44,9 +43,8 @@ public class Fragance {
     private Map<String, String> mainAccordsPercentage;
 
     @JsonProperty("Notes")
-    private Notes notes; // Top / Middle / Base
+    private Notes notes; 
 
-    // Opcionales
     @JsonProperty("Image Fallbacks")
     private List<String> imageFallbacks;
 
