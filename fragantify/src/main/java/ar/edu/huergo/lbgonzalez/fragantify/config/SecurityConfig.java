@@ -7,6 +7,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -37,11 +38,13 @@ public class SecurityConfig {
                                     JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http
             .securityMatcher("/api/**")
+            .cors(Customizer.withDefaults())
             .csrf(csrf -> csrf.disable())
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 // --- AUTH ---
                 .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
 
                 // --- PERFUMES ---
                 .requestMatchers(HttpMethod.GET,    "/api/perfumes/**").permitAll()           // catálogo público
@@ -92,6 +95,7 @@ public class SecurityConfig {
         SecurityFilterChain webSecurity(HttpSecurity http) throws Exception {
         http
                 .securityMatcher("/**")
+                .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                 // ⬇️ agrega estas dos líneas
@@ -188,3 +192,9 @@ public class SecurityConfig {
         return cfg.getAuthenticationManager();
     }
 }
+
+
+
+
+
+

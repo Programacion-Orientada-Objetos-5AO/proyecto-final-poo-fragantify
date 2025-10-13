@@ -1,246 +1,160 @@
+import { useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
-import { 
-  Heart, 
-  Star, 
-  Trash2, 
-  ShoppingCart,
-  BarChart3,
-  Calendar
-} from "lucide-react";
+import { Heart, Trash2, GitCompareArrows, ShoppingCart, RefreshCcw } from "lucide-react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
-
-const favoritePerfumes = [];
-
-const favoriteStats = {
-  totalFavorites: favoritePerfumes.length,
-  averagePrice: Math.round(favoritePerfumes.reduce((sum, p) => sum + p.price, 0) / favoritePerfumes.length),
-  mostLikedFamily: "Amaderada",
-  totalValue: favoritePerfumes.reduce((sum, p) => sum + p.price, 0)
-};
+import { useFragrances } from "../context/FragranceContext";
+import { normalizePrice } from "../utils/prices";
 
 export function Favorites() {
-  const removeFavorite = (perfumeId: number) => {
-    // En una app real, esto removería el perfume de favoritos
-    console.log(`Remove perfume ${perfumeId} from favorites`);
-  };
+  const { favorites, toggleFavorite, addToCompare, isInCompare, getById, refresh, loading } = useFragrances();
 
-  const addToCompare = (perfumeId: number) => {
-    // En una app real, esto agregaría el perfume a la comparación
-    console.log(`Add perfume ${perfumeId} to compare`);
-  };
+  const favoritePerfumes = useMemo(() => favorites
+    .map((id) => getById(id))
+    .filter((item): item is NonNullable<ReturnType<typeof getById>> => Boolean(item)),
+  [favorites, getById]);
+
+  const stats = useMemo(() => {
+    if (favoritePerfumes.length === 0) {
+      return { totalFavorites: 0, averagePrice: 0, totalValue: 0 };
+    }
+    const prices = favoritePerfumes
+      .map((item) => normalizePrice(item.price))
+      .filter((value): value is number => value !== null);
+
+    const totalValue = prices.reduce((sum, value) => sum + value, 0);
+    const averagePrice = prices.length > 0 ? Math.round(totalValue / prices.length) : 0;
+
+    return {
+      totalFavorites: favoritePerfumes.length,
+      averagePrice,
+      totalValue: Math.round(totalValue),
+    };
+  }, [favoritePerfumes]);
 
   return (
     <div className="space-y-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold">Mis Favoritos</h1>
-        <p className="text-muted-foreground">
-          Tus fragancias favoritas en un solo lugar
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Mis favoritos</h1>
+          <p className="text-muted-foreground">Tus fragancias guardadas desde la API.</p>
+        </div>
+        <Button variant="outline" onClick={refresh} disabled={loading}>
+          <RefreshCcw className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`} />
+          Actualizar
+        </Button>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Favoritos</CardTitle>
+            <CardTitle className="text-sm font-medium">Total favoritos</CardTitle>
             <Heart className="h-4 w-4 text-red-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{favoriteStats.totalFavorites}</div>
+            <div className="text-2xl font-bold">{stats.totalFavorites}</div>
             <p className="text-xs text-muted-foreground">Fragancias guardadas</p>
           </CardContent>
         </Card>
-
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Precio Promedio</CardTitle>
+            <CardTitle className="text-sm font-medium">Precio promedio</CardTitle>
             <ShoppingCart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${favoriteStats.averagePrice}</div>
+            <div className="text-2xl font-bold">${stats.averagePrice}</div>
             <p className="text-xs text-muted-foreground">Por fragancia</p>
           </CardContent>
         </Card>
-
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Familia Favorita</CardTitle>
-            <Star className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Valor total estimado</CardTitle>
+            <ShoppingCart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{favoriteStats.mostLikedFamily}</div>
-            <p className="text-xs text-muted-foreground">Más seleccionada</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Valor Total</CardTitle>
-            <BarChart3 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">${favoriteStats.totalValue}</div>
-            <p className="text-xs text-muted-foreground">Inversión en favoritos</p>
+            <div className="text-2xl font-bold">${stats.totalValue}</div>
+            <p className="text-xs text-muted-foreground">Suma de precios</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Favorites List */}
-      {favoritePerfumes.length > 0 ? (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold">Tus Fragancias Favoritas</h2>
-            <Button variant="outline" size="sm">
-              <BarChart3 className="h-4 w-4 mr-2" />
-              Comparar Todos
-            </Button>
-          </div>
-
-          <div className="grid gap-6">
-            {favoritePerfumes.map((perfume) => (
-              <Card key={perfume.id} className="hover:shadow-md transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex gap-6">
-                    {/* Image */}
-                    <div className="w-32 h-32 overflow-hidden rounded-lg bg-muted flex-shrink-0">
-                      <ImageWithFallback
-                        src={perfume.image}
-                        alt={perfume.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-
-                    {/* Content */}
-                    <div className="flex-1 space-y-4">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <h3 className="text-xl font-semibold">{perfume.name}</h3>
-                          <p className="text-muted-foreground">{perfume.brand} • {perfume.type}</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => addToCompare(perfume.id)}
-                          >
-                            <BarChart3 className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => removeFavorite(perfume.id)}
-                          >
-                            <Trash2 className="h-4 w-4 text-red-500" />
-                          </Button>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-4">
-                        <Badge variant="secondary">{perfume.family}</Badge>
-                        {!perfume.inStock && (
-                          <Badge variant="destructive">Agotado</Badge>
-                        )}
-                        <div className="flex items-center gap-1">
-                          <Calendar className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm text-muted-foreground">
-                            Agregado el {new Date(perfume.dateAdded).toLocaleDateString('es-ES')}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-6">
-                        <div className="flex items-center gap-1">
-                          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                          <span className="font-medium">{perfume.rating}</span>
-                          <span className="text-sm text-muted-foreground">
-                            ({perfume.reviews} reseñas)
-                          </span>
-                        </div>
-                        
-                        <div className="flex items-center gap-1">
-                          <span className="text-sm text-muted-foreground">Tu calificación:</span>
-                          <div className="flex">
-                            {[...Array(5)].map((_, i) => (
-                              <Star 
-                                key={i} 
-                                className={`h-4 w-4 ${
-                                  i < perfume.yourRating 
-                                    ? 'fill-yellow-400 text-yellow-400' 
-                                    : 'text-gray-300'
-                                }`} 
-                              />
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-
-                      {perfume.notes && (
-                        <div className="bg-muted p-3 rounded-lg">
-                          <p className="text-sm">
-                            <span className="font-medium">Tus notas:</span> {perfume.notes}
-                          </p>
-                        </div>
-                      )}
-
-                      <div className="flex items-center justify-between pt-2">
-                        <span className="text-2xl font-bold">${perfume.price}</span>
-                        <div className="flex gap-3">
-                          <Button variant="outline" size="sm">
-                            Ver Detalles
-                          </Button>
-                          <Button size="sm" disabled={!perfume.inStock}>
-                            <ShoppingCart className="h-4 w-4 mr-2" />
-                            {perfume.inStock ? 'Comprar' : 'Agotado'}
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      ) : (
+      {favoritePerfumes.length === 0 ? (
         <Card>
           <CardHeader>
-            <CardTitle>No tienes favoritos aún</CardTitle>
+            <CardTitle>No tienes favoritos aun</CardTitle>
             <CardDescription>
-              Comienza a explorar nuestro catálogo y agrega tus fragancias favoritas
+              Explora el catalogo y marca las fragancias que te gusten para verlas aqui.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button>
+            <Button onClick={() => refresh()}>
               <Heart className="h-4 w-4 mr-2" />
-              Explorar Catálogo
+              Explorar catalogo
             </Button>
           </CardContent>
         </Card>
-      )}
+      ) : (
+        <div className="grid gap-6">
+          {favoritePerfumes.map((perfume) => (
+            <Card key={perfume.id} className="hover:shadow-md transition-shadow bg-black border border-[#d4af37]/20">
+              <CardContent className="p-6">
+                <div className="flex flex-col md:flex-row gap-6">
+                  <div className="w-32 h-32 overflow-hidden rounded-lg bg-muted flex-shrink-0 mx-auto md:mx-0">
+                    <ImageWithFallback
+                      src={perfume.imageUrl}
+                      fallbackUrls={perfume.imageFallbacks}
+                      alt={perfume.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
 
-      {/* Quick Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Acciones Rápidas</CardTitle>
-        </CardHeader>
-        <CardContent className="flex gap-4">
-          <Button variant="outline">
-            <BarChart3 className="h-4 w-4 mr-2" />
-            Comparar Favoritos
-          </Button>
-          <Button variant="outline">
-            <Star className="h-4 w-4 mr-2" />
-            Reseñar Favoritos
-          </Button>
-          <Button variant="outline">
-            <ShoppingCart className="h-4 w-4 mr-2" />
-            Lista de Compras
-          </Button>
-        </CardContent>
-      </Card>
+                  <div className="flex-1 space-y-4">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                      <div>
+                        <h3 className="text-xl font-semibold text-white">{perfume.name}</h3>
+                        <p className="text-muted-foreground">{perfume.brand}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="text-white border-[#d4af37]">
+                          {perfume.gender ?? "Unisex"}
+                        </Badge>
+                        {perfume.longevity && (
+                          <Badge variant="outline" className="text-white border-[#d4af37]">
+                            Longevidad: {perfume.longevity}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2">
+                      {(perfume.mainAccords ?? perfume.generalNotes ?? []).slice(0, 5).map((accord) => (
+                        <Badge key={accord} variant="secondary" className="bg-[#1e293b] text-white">
+                          {accord}
+                        </Badge>
+                      ))}
+                    </div>
+
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                      <span className="text-2xl font-bold text-[#d4af37]">{perfume.price ?? "Precio no disponible"}</span>
+                      <div className="flex items-center gap-3">
+                        <Button variant="outline" onClick={() => addToCompare(perfume.id)}>
+                          <GitCompareArrows className="h-4 w-4 mr-2" />
+                          {isInCompare(perfume.id) ? "En comparacion" : "Comparar"}
+                        </Button>
+                        <Button variant="outline" onClick={() => toggleFavorite(perfume.id)}>
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Quitar
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
