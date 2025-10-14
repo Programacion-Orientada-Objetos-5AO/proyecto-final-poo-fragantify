@@ -1,0 +1,24 @@
+body {
+    /* Gradiente de arriba a abajo */
+    background: linear-gradient(to bottom, #000000,  #0f172a);
+    height: 100vh; /* ocupa toda la pantalla */
+    margin: 0;
+    color: white;
+}
+
+
+
+.letrasInicio{
+    color: white;
+    font-size: 24px;
+    margin-top: 150px;
+    font-family: 'Vilaka', serif;
+}
+
+
+@font-face {
+    font-family: 'Vilaka';
+    src: url('/fonts/Vilaka.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}

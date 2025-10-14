@@ -31,17 +31,17 @@ public class Marca {
   private Long id;
   
   @NotBlank(message = "El nombre es obligatorio")
-    @Size(min = 2, max = 100)
-    private String nombre;
+  @Size(min = 2, max = 100)
+  private String nombre;
 
-    @NotBlank(message = "El pais de origen es obligatorio")
-    @Size(min = 2, max = 100)
-    private String paisOrigen;
+  @NotBlank(message = "El pais de origen es obligatorio")
+  @Size(min = 2, max = 100)
+  private String paisOrigen;
 
-    @Positive(message = "El año de fundacion debe ser mayor a 0")
-    @Max(value = 2024, message = "El año de fundacion no puede ser mayor al año actual")
-    private int añoFundacion;
-    @Size(max = 500)
-    private String descripcion;
+  @Positive(message = "El año de fundacion debe ser mayor a 0")
+  @Max(value = 2024, message = "El año de fundacion no puede ser mayor al año actual")
+  private int añoFundacion;
+  @Size(max = 500)
+  private String descripcion;
 }
 
