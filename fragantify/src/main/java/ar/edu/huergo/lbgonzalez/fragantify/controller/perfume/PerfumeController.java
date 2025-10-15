@@ -18,9 +18,11 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import ar.edu.huergo.lbgonzalez.fragantify.dto.perfume.CrearActualizarPerfumeDTO;
 import ar.edu.huergo.lbgonzalez.fragantify.dto.perfume.MostrarPerfumeDTO;
+import ar.edu.huergo.lbgonzalez.fragantify.dto.perfume.PerfumeExternalDTO;
 import ar.edu.huergo.lbgonzalez.fragantify.entity.perfume.Perfume;
 import ar.edu.huergo.lbgonzalez.fragantify.mapper.perfume.PerfumeMapper;
 import ar.edu.huergo.lbgonzalez.fragantify.service.perfume.PerfumeService;
+import ar.edu.huergo.lbgonzalez.fragantify.service.perfume.PerfumeApiService;
 import jakarta.validation.Valid;
 
 @RestController
@@ -28,6 +30,7 @@ import jakarta.validation.Valid;
 public class PerfumeController {
 
     @Autowired private PerfumeService perfumeService;
+    @Autowired private PerfumeApiService perfumeApiService;
     @Autowired private PerfumeMapper perfumeMapper;
 
     // 👇 Inyectá el service externo (no lo llames estático)
@@ -78,6 +81,13 @@ public class PerfumeController {
             @RequestParam(required = false) Double precioMax) {
         List<Perfume> perfumes = perfumeService.filtrarPerfumes(familiaOlfativa, precioMin, precioMax);
         return ResponseEntity.ok(perfumeMapper.toDTOList(perfumes));
+    }
+
+    // Busca perfumes en la API externa, validando que los filtros sean correctos
+    @GetMapping("/externos")
+    public ResponseEntity<List<PerfumeExternalDTO>> buscarPerfumesExternos(@RequestParam(required = false) java.util.Map<String, String> filtros) {
+        List<PerfumeExternalDTO> resultados = perfumeApiService.buscarExternos(filtros);
+        return ResponseEntity.ok(resultados);
     }
 
     @GetMapping("/marca/{marca}")

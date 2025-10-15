@@ -23,11 +23,11 @@ public class Perfume {
     private Long id;
 
     @NotBlank(message = "El nombre es obligatorio")
-    @Size(min = 2, max = 100)
+    @Size(min = 2, max = 100, message = "El nombre debe tener entre 2 y 100 caracteres")
     private String nombre;
 
     @NotBlank(message = "La marca es obligatoria")
-    @Size(min = 2, max = 100)
+    @Size(min = 2, max = 100, message = "La marca debe tener entre 2 y 100 caracteres")
     private String marca;
 
     @Positive(message = "El precio debe ser mayor a 0")

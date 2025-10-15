@@ -48,6 +48,18 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * Manejo de errores de peticion invalida (por ejemplo, filtros no permitidos).
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ProblemDetail handleIllegalArgument(IllegalArgumentException ex) {
+        ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problem.setTitle("Solicitud invalida");
+        problem.setDetail(ex.getMessage());
+        return problem;
+    }
+
+    /**
      * Manejo genérico de cualquier otra excepción.
      */
     @ExceptionHandler(Exception.class)
