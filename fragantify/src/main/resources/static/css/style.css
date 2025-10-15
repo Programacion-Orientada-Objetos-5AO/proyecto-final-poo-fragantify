@@ -1,0 +1,155 @@
+/* === Fuente local === */
+@font-face {
+  font-family: 'Vilaka';
+  src: url('/fonts/Vilaka.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* === Hero === */
+:root{
+  --bg-top: #000000;
+  --bg-bottom: #0f172a;
+  --gold: #d4af37;         /* dorado elegante */
+  --gold-dark: #b5902c;    /* hover */
+  --text: #e9ecef;
+}
+
+* { box-sizing: border-box; }
+
+body{
+  margin: 0;
+  background: linear-gradient(to bottom, var(--bg-top), var(--bg-bottom));
+  color: var(--text);
+  min-height: 100vh;
+}
+
+.hero{
+  min-height: 100vh;
+  padding: 6rem 1rem 4rem;
+  position: relative;
+  isolation: isolate;
+}
+
+/* (Opcional) sutil viñeta oscura al centro */
+.hero::after{
+  content:"";
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 40%, rgba(0,0,0,.0) 0%, rgba(0,0,0,.35) 60%, rgba(0,0,0,.55) 100%);
+  z-index: -1;
+}
+
+.hero-title{
+  font-family: 'Vilaka', serif;
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: .5px;
+  margin: 0 0 .75rem;
+  font-size: clamp(2rem, 5vw + .5rem, 4rem); /* responsivo */
+}
+
+.hero-accent{
+  display: block;                /* obliga a segunda línea */
+  color: var(--gold);
+  margin-top: .25rem;
+}
+
+.hero-subtitle{
+  margin: 0 auto 2rem;
+  max-width: 720px;
+  opacity: .9;
+  font-size: clamp(1rem, 1.2vw + .6rem, 1.15rem);
+}
+
+/* === Botones === */
+.btn{
+  border-radius: 9999px;         /* pill */
+  padding: .75rem 1.25rem;
+  font-weight: 600;
+  letter-spacing: .3px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.25);
+  transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease, color .15s ease, border-color .15s ease;
+}
+
+.btn:active{ transform: translateY(1px); }
+
+/* lleno */
+.btn-gold{
+  background-color: var(--gold);
+  border: 1px solid var(--gold);
+  color: #1a1a1a;
+}
+.btn-gold:hover{
+  background-color: var(--gold-dark);
+  border-color: var(--gold-dark);
+  color: #111;
+}
+
+/* borde */
+.btn-outline-gold{
+  background-color: transparent;
+  border: 2px solid var(--gold);
+  color: var(--text);
+}
+.btn-outline-gold:hover{
+  background-color: rgba(212,175,55,.12);
+  border-color: var(--gold-dark);
+  color: #fff;
+}
+
+.hero-actions{ margin-top: 1.25rem; }
+
+/* Ajustes finos en pantallas chicas */
+@media (max-width: 576px){
+  .hero-actions .btn{ width: 100%; }
+}
+
+
+/* 🟡 Barra fija debajo del navbar */
+.hard-search-bar {
+  position: fixed;
+  top: 64px; /* justo debajo del navbar (ajusta si el navbar es más alto o bajo) */
+  left: 0;
+  right: 50px;
+  width: 100%;
+  background: #000;
+  border-bottom: 1px solid rgba(212,175,55,0.4);
+  z-index: 1031; /* encima del contenido */
+  padding: 10px 0;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+}
+
+.hard-search-bar .form-control {
+  width: 400px;
+  max-width: 80%;
+  background: #000;
+  border: 2px solid #d4af37;
+  border-radius: 12px;
+  color: #fff;
+}
+
+.hard-search-bar .form-control::placeholder {
+  color: #ccc;
+}
+
+.hard-search-bar button {
+  border-radius: 12px;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.hard-search-bar button:hover {
+  background-color: #b5902c;
+}
+
+/* Ajuste para que el contenido no quede debajo */
+main {
+  margin-top: 160px; /* da espacio al navbar + search bar */
+}
+
+
+
+
+
+
