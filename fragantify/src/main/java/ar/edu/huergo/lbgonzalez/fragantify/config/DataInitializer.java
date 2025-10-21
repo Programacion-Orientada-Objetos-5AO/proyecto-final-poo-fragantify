@@ -2,54 +2,34 @@ package ar.edu.huergo.lbgonzalez.fragantify.config;
 
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import ar.edu.huergo.lbgonzalez.fragantify.entity.security.Rol;
-import ar.edu.huergo.lbgonzalez.fragantify.entity.security.Usuario;
 import ar.edu.huergo.lbgonzalez.fragantify.repository.security.RolRepository;
-import ar.edu.huergo.lbgonzalez.fragantify.repository.security.UsuarioRepository;
-import ar.edu.huergo.lbgonzalez.fragantify.util.PasswordValidator;
+import lombok.RequiredArgsConstructor;
 
+@Component
+@RequiredArgsConstructor
+public class DataInitializer implements CommandLineRunner {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataInitializer.class);
 
-@Configuration
-public class DataInitializer {
+    private final RolRepository rolRepository;
 
-    @Bean
-    CommandLineRunner initData(
-            RolRepository rolRepository,
-            UsuarioRepository usuarioRepository,
-            PasswordEncoder encoder) {
+    @Override
+    @Transactional
+    public void run(String... args) {
+        Rol admin = ensureRole("ADMIN");
+        Rol cliente = ensureRole("CLIENTE");
+        LOGGER.debug("Roles inicializados: {}", Set.of(admin.getNombre(), cliente.getNombre()));
+    }
 
-        return args -> {
-            // Roles base
-            Rol admin = rolRepository.findByNombre("ADMIN")
-                    .orElseGet(() -> rolRepository.save(new Rol("ADMIN")));
-            Rol cliente = rolRepository.findByNombre("CLIENTE")
-                    .orElseGet(() -> rolRepository.save(new Rol("CLIENTE")));
-
-            // Admin por defecto
-            final String adminUsername = "admin@fragantify.app";
-            if (usuarioRepository.findByUsername(adminUsername).isEmpty()) {
-                String adminPassword = "AdminSuperSegura@123"; // ideal: leer de variable de entorno
-                PasswordValidator.validate(adminPassword);
-                Usuario u = new Usuario(adminUsername, encoder.encode(adminPassword));
-                u.setRoles(Set.of(admin));
-                usuarioRepository.save(u);
-            }
-
-            // Cliente demo por defecto
-            final String clienteUsername = "cliente@fragantify.app";
-            if (usuarioRepository.findByUsername(clienteUsername).isEmpty()) {
-                String clientePassword = "ClienteSuperSegura@123";
-                PasswordValidator.validate(clientePassword);
-                Usuario u = new Usuario(clienteUsername, encoder.encode(clientePassword));
-                u.setRoles(Set.of(cliente));
-                usuarioRepository.save(u);
-            }
-        };
+    private Rol ensureRole(String nombre) {
+        return rolRepository.findByNombre(nombre)
+                .orElseGet(() -> rolRepository.save(new Rol(nombre)));
     }
 }

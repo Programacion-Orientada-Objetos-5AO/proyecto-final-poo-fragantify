@@ -1,0 +1,162 @@
+[
+  {
+    "Name": "Eros Eau de Toilette",
+    "Brand": "Versace",
+    "Price": "$98.00",
+    "Image URL": "https://images.fragella.com/versace-eros.jpg",
+    "Gender": "men",
+    "Longevity": 85,
+    "Sillage": 80,
+    "General Notes": ["Fresh", "Sweet"],
+    "Main Accords": ["Mint", "Vanilla", "Tonka Bean"],
+    "Main Accords Percentage": {
+      "Mint": 33.0,
+      "Vanilla": 28.0,
+      "Tonka Bean": 21.0
+    }
+  },
+  {
+    "Name": "Light Blue",
+    "Brand": "Dolce & Gabbana",
+    "Price": "$84.00",
+    "Image URL": "https://images.fragella.com/dolce-light-blue.jpg",
+    "Gender": "women",
+    "Longevity": 70,
+    "Sillage": 65,
+    "General Notes": ["Citrus", "Fresh"],
+    "Main Accords": ["Lemon", "Apple", "Cedar"],
+    "Main Accords Percentage": {
+      "Lemon": 34.0,
+      "Apple": 22.0,
+      "Cedar": 18.0
+    }
+  },
+  {
+    "Name": "Sauvage",
+    "Brand": "Dior",
+    "Price": "$110.00",
+    "Image URL": "https://images.fragella.com/dior-sauvage.jpg",
+    "Gender": "men",
+    "Longevity": 90,
+    "Sillage": 88,
+    "General Notes": ["Fresh", "Spicy"],
+    "Main Accords": ["Ambroxan", "Pepper", "Bergamot"],
+    "Main Accords Percentage": {
+      "Ambroxan": 30.0,
+      "Pepper": 26.0,
+      "Bergamot": 20.0
+    }
+  },
+  {
+    "Name": "La Vie Est Belle",
+    "Brand": "Lancôme",
+    "Price": "$112.00",
+    "Image URL": "https://images.fragella.com/lancome-la-vie.jpg",
+    "Gender": "women",
+    "Longevity": 92,
+    "Sillage": 87,
+    "General Notes": ["Sweet", "Gourmand"],
+    "Main Accords": ["Praline", "Vanilla", "Patchouli"],
+    "Main Accords Percentage": {
+      "Praline": 35.0,
+      "Vanilla": 27.0,
+      "Patchouli": 18.0
+    }
+  },
+  {
+    "Name": "Aventus",
+    "Brand": "Creed",
+    "Price": "$345.00",
+    "Image URL": "https://images.fragella.com/creed-aventus.jpg",
+    "Gender": "men",
+    "Longevity": 95,
+    "Sillage": 90,
+    "General Notes": ["Fruity", "Smoky"],
+    "Main Accords": ["Pineapple", "Birch", "Musk"],
+    "Main Accords Percentage": {
+      "Pineapple": 32.0,
+      "Birch": 24.0,
+      "Musk": 19.0
+    }
+  },
+  {
+    "Name": "Black Opium",
+    "Brand": "Yves Saint Laurent",
+    "Price": "$135.00",
+    "Image URL": "https://images.fragella.com/ysl-black-opium.jpg",
+    "Gender": "women",
+    "Longevity": 88,
+    "Sillage": 82,
+    "General Notes": ["Sweet", "Coffee"],
+    "Main Accords": ["Coffee", "Vanilla", "Pear"],
+    "Main Accords Percentage": {
+      "Coffee": 31.0,
+      "Vanilla": 25.0,
+      "Pear": 20.0
+    }
+  },
+  {
+    "Name": "Bleu de Chanel",
+    "Brand": "Chanel",
+    "Price": "$115.00",
+    "Image URL": "https://images.fragella.com/chanel-bleu.jpg",
+    "Gender": "men",
+    "Longevity": 89,
+    "Sillage": 84,
+    "General Notes": ["Fresh", "Woody"],
+    "Main Accords": ["Citrus", "Sandalwood", "Incense"],
+    "Main Accords Percentage": {
+      "Citrus": 29.0,
+      "Sandalwood": 24.0,
+      "Incense": 19.0
+    }
+  },
+  {
+    "Name": "Good Girl",
+    "Brand": "Carolina Herrera",
+    "Price": "$118.00",
+    "Image URL": "https://images.fragella.com/ch-good-girl.jpg",
+    "Gender": "women",
+    "Longevity": 86,
+    "Sillage": 80,
+    "General Notes": ["Sweet", "Warm"],
+    "Main Accords": ["Cocoa", "Almond", "Jasmine"],
+    "Main Accords Percentage": {
+      "Cocoa": 28.0,
+      "Almond": 23.0,
+      "Jasmine": 18.0
+    }
+  },
+  {
+    "Name": "Acqua di Gio",
+    "Brand": "Giorgio Armani",
+    "Price": "$105.00",
+    "Image URL": "https://images.fragella.com/armani-acqua.jpg",
+    "Gender": "men",
+    "Longevity": 75,
+    "Sillage": 70,
+    "General Notes": ["Fresh", "Aquatic"],
+    "Main Accords": ["Sea Notes", "Lime", "Cedar"],
+    "Main Accords Percentage": {
+      "Sea Notes": 33.0,
+      "Lime": 21.0,
+      "Cedar": 17.0
+    }
+  },
+  {
+    "Name": "Flowerbomb",
+    "Brand": "Viktor&Rolf",
+    "Price": "$130.00",
+    "Image URL": "https://images.fragella.com/viktor-flowerbomb.jpg",
+    "Gender": "women",
+    "Longevity": 91,
+    "Sillage": 88,
+    "General Notes": ["Floral", "Sweet"],
+    "Main Accords": ["Jasmine", "Patchouli", "Vanilla"],
+    "Main Accords Percentage": {
+      "Jasmine": 30.0,
+      "Patchouli": 22.0,
+      "Vanilla": 19.0
+    }
+  }
+]

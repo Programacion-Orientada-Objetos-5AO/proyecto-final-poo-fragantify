@@ -41,11 +41,12 @@ public class AuthController {
                 new UsernamePasswordAuthenticationToken(request.username(), request.password()));
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.username());
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(authority -> authority.getAuthority())
+        Usuario usuario = usuarioService.obtenerPorUsername(request.username());
+        List<String> roles = usuario.getRoles().stream()
+                .map(rol -> rol.getNombre())
                 .toList();
         String token = jwtTokenService.generarToken(userDetails, roles);
-        UsuarioDTO usuarioDTO = new UsuarioDTO(userDetails.getUsername(), roles);
+        UsuarioDTO usuarioDTO = usuarioMapper.toDTO(usuario);
 
         return ResponseEntity.ok(new AuthResponseDTO(token, usuarioDTO));
     }

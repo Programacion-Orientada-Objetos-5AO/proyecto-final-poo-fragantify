@@ -23,6 +23,11 @@ public class UsuarioService {
         return usuarioRepository.findAll();
     }
 
+    public Usuario obtenerPorUsername(String username) {
+        return usuarioRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado: " + username));
+    }
+
     public Usuario registrar(Usuario usuario, String password, String verificacionPassword) {
         if (password == null || verificacionPassword == null) {
             throw new IllegalArgumentException("Las contraseñas no pueden ser null");

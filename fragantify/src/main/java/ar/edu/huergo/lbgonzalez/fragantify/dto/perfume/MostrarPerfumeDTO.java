@@ -6,9 +6,8 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class MostrarPerfumeDTO extends PerfumeDto {
 
-    public MostrarPerfumeDTO(Long id, String nombre, String marca, Double precio ) {
-        super(id, nombre, marca, precio);
+    public MostrarPerfumeDTO(Long id, String nombre, String marca, Double precio, Boolean favorito) {
+        super(id, nombre, marca, precio, favorito);
     }
 }
-
 

@@ -33,27 +33,45 @@ function normalizeFragrances(data: FragranceApiResponse[]): Fragrance[] {
 
   return data.map((item) => {
     const baseSlug = slugify(`${item.brand ?? "unknown"}-${item.name ?? "fragrance"}`);
-    const count = seen.get(baseSlug) ?? 0;
-    seen.set(baseSlug, count + 1);
-    const id = count === 0 ? baseSlug : `${baseSlug}-${count + 1}`;
+    const rawId = item.id;
+    let id: string;
+    if (rawId !== undefined && rawId !== null && String(rawId).trim().length > 0) {
+      id = String(rawId);
+    } else {
+      const count = seen.get(baseSlug) ?? 0;
+      seen.set(baseSlug, count + 1);
+      id = count === 0 ? baseSlug : `${baseSlug}-${count + 1}`;
+    }
+
+    const accordsPercentage = item.mainAccordsPercentage
+      ? Object.entries(item.mainAccordsPercentage).reduce<Record<string, string | number>>((acc, [key, value]) => {
+        if (value !== undefined && value !== null) {
+          acc[key] = value;
+        }
+        return acc;
+      }, {})
+      : undefined;
+
+    const normalizedAccordsPercentage =
+      accordsPercentage && Object.keys(accordsPercentage).length > 0 ? accordsPercentage : undefined;
 
     return {
       id,
       name: item.name ?? "Fragrance",
       brand: item.brand ?? "",
-      price: item.price,
-      imageUrl: item.imageUrl,
-      imageFallbacks: item.imageFallbacks,
-      gender: item.gender,
-      longevity: item.longevity,
-      sillage: item.sillage,
-      generalNotes: item.generalNotes,
-      mainAccords: item.mainAccords,
-      mainAccordsPercentage: item.mainAccordsPercentage,
-      notes: item.notes,
-      purchaseUrl: item.purchaseUrl,
-      seasonRanking: item.seasonRanking,
-      occasionRanking: item.occasionRanking,
+      price: item.price ?? undefined,
+      imageUrl: item.imageUrl ?? undefined,
+      imageFallbacks: item.imageFallbacks ?? undefined,
+      gender: item.gender ?? undefined,
+      longevity: item.longevity ?? undefined,
+      sillage: item.sillage ?? undefined,
+      generalNotes: item.generalNotes ?? undefined,
+      mainAccords: item.mainAccords ?? undefined,
+      mainAccordsPercentage: normalizedAccordsPercentage,
+      notes: item.notes ?? undefined,
+      purchaseUrl: item.purchaseUrl ?? undefined,
+      seasonRanking: item.seasonRanking ?? undefined,
+      occasionRanking: item.occasionRanking ?? undefined,
     } satisfies Fragrance;
   });
 }

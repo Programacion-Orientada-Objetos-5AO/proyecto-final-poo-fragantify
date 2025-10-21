@@ -120,6 +120,7 @@ export function PerfumeCatalog() {
           </div>
           <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto max-w-md lg:max-w-none">
             <Input
+              id="catalog-search"
               placeholder="Buscar por nombre o marca"
               value={search}
               onChange={(e) => setSearch(e.target.value)}

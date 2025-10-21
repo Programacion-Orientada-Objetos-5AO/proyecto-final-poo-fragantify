@@ -33,7 +33,21 @@ export interface Fragrance {
   occasionRanking?: FragranceRankingItem[];
 }
 
-export type FragranceApiResponse = Omit<Fragrance, 'id'> & {
+export interface FragranceApiResponse {
+  id?: string | number;
   name: string;
   brand: string;
-};
+  price?: string;
+  imageUrl?: string;
+  imageFallbacks?: string[];
+  gender?: string;
+  longevity?: string;
+  sillage?: string;
+  generalNotes?: string[];
+  mainAccords?: string[];
+  mainAccordsPercentage?: Record<string, number>;
+  notes?: FragranceNotes;
+  purchaseUrl?: string;
+  seasonRanking?: FragranceRankingItem[];
+  occasionRanking?: FragranceRankingItem[];
+}

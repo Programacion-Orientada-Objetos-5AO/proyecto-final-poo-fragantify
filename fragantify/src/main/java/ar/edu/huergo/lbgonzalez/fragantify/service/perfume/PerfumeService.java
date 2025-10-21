@@ -87,7 +87,7 @@ public class PerfumeService {
     // Toggle favorito
     public Perfume toggleFavorito(Long id) {
         Perfume perfume = getPerfume(id).orElseThrow(() -> new PerfumeNotFoundException("Perfume no encontrado con id " + id));
-        // Asumir que hay un campo favorito, por ahora no cambiar
+        perfume.setFavorito(!perfume.isFavorito());
         return perfumeRepository.save(perfume);
     }
 

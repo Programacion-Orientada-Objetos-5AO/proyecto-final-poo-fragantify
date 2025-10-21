@@ -36,6 +36,8 @@ public class Perfume {
     @Size(max = 100)
     private String familiaOlfativa;
 
+    private boolean favorito;
+
     // Constructor para crear perfumes nuevos (sin id)
     public Perfume(String nombre, String marca, double precio) {
         this.nombre = nombre;

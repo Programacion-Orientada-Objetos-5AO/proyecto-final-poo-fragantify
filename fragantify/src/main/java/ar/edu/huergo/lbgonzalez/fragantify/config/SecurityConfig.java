@@ -191,6 +191,7 @@ public class SecurityConfig {
     AuthenticationManager authenticationManager(AuthenticationConfiguration cfg) throws Exception {
         return cfg.getAuthenticationManager();
     }
+
 }
 
 

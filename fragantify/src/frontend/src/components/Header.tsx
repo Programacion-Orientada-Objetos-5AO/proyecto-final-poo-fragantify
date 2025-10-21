@@ -29,6 +29,26 @@ export function Header({ currentPage, onNavigate, isAuthenticated, userEmail, on
     setMobileMenuOpen(false);
   };
 
+  const focusCatalogSearch = () => {
+    const catalogElement = document.getElementById("catalog");
+    catalogElement?.scrollIntoView({ behavior: "smooth", block: "start" });
+    const searchInput = document.getElementById("catalog-search") as HTMLInputElement | null;
+    searchInput?.focus();
+  };
+
+  const handleSearchClick = () => {
+    if (currentPage !== "catalog") {
+      handleNavigate("catalog");
+      setTimeout(focusCatalogSearch, 150);
+    } else {
+      focusCatalogSearch();
+    }
+  };
+
+  const handleShoppingClick = () => {
+    handleNavigate("pack-builder");
+  };
+
   return (
     <header className="bg-black sticky top-0 z-50 shadow-lg border-b border-gray-800">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
@@ -56,13 +76,34 @@ export function Header({ currentPage, onNavigate, isAuthenticated, userEmail, on
                 {item.label}
               </button>
             ))}
+            {!isAuthenticated && (
+              <>
+                <button
+                  onClick={() => handleNavigate("login")}
+                  className="text-white hover:text-[#d4af37] transition-colors duration-300"
+                >
+                  Ingresar
+                </button>
+                <button
+                  onClick={() => handleNavigate("register")}
+                  className="text-black bg-[#d4af37] px-3 py-1 rounded-md hover:bg-[#fbbf24] transition-colors duration-300 shadow-md"
+                >
+                  Registro
+                </button>
+              </>
+            )}
           </nav>
 
           <div className="hidden sm:flex items-center space-x-3 lg:space-x-4">
-            <Search className="w-4 h-4 lg:w-5 lg:h-5 text-[#d4af37] cursor-pointer hover:scale-110 transition-transform duration-300" />
-            <ShoppingBag className="w-4 h-4 lg:w-5 lg:h-5 text-white cursor-pointer hover:text-[#d4af37] transition-colors duration-300" />
-
-            {isAuthenticated ? (
+            <Search
+              onClick={handleSearchClick}
+              className="w-4 h-4 lg:w-5 lg:h-5 text-[#d4af37] cursor-pointer hover:scale-110 transition-transform duration-300"
+            />
+            <ShoppingBag
+              onClick={handleShoppingClick}
+              className="w-4 h-4 lg:w-5 lg:h-5 text-white cursor-pointer hover:text-[#d4af37] transition-colors duration-300"
+            />
+            {isAuthenticated && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="text-white hover:text-[#d4af37] px-2">
@@ -85,27 +126,11 @@ export function Header({ currentPage, onNavigate, isAuthenticated, userEmail, on
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            ) : (
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  className="text-white hover:text-[#d4af37]"
-                  onClick={() => handleNavigate("login")}
-                >
-                  <LogIn className="w-4 h-4 mr-1" /> Ingresar
-                </Button>
-                <Button
-                  className="bg-[#d4af37] text-black px-3 py-1.5 text-sm rounded-md hover:bg-[#fbbf24] transition-colors duration-300 shadow-md"
-                  onClick={() => handleNavigate("register")}
-                >
-                  <UserPlus className="w-4 h-4 mr-1" /> Registro
-                </Button>
-              </div>
             )}
           </div>
 
           <div className="sm:hidden flex items-center space-x-3">
-            <Search className="w-5 h-5 text-[#d4af37] cursor-pointer" />
+            <Search onClick={handleSearchClick} className="w-5 h-5 text-[#d4af37] cursor-pointer" />
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="text-white hover:text-[#d4af37] transition-colors"

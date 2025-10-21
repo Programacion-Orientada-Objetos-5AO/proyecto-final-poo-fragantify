@@ -27,4 +27,5 @@ public class PerfumeDto {
     @Positive(message = "El precio debe ser positivo")
     @NotNull(message = "El precio no puede ser nulo")
     private Double precio;
+    private Boolean favorito;
 }
