@@ -35,7 +35,3 @@ out/
 
 ### VS Code ###
 .vscode/
-
-### Frontend build artifacts ###
-src/frontend/index.html
-src/frontend/node_modules/.vite/

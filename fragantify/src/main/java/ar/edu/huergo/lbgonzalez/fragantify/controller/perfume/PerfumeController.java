@@ -18,7 +18,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import ar.edu.huergo.lbgonzalez.fragantify.dto.perfume.CrearActualizarPerfumeDTO;
 import ar.edu.huergo.lbgonzalez.fragantify.dto.perfume.MostrarPerfumeDTO;
-import ar.edu.huergo.lbgonzalez.fragantify.dto.perfume.FragranceExternalDTO;
+import ar.edu.huergo.lbgonzalez.fragantify.dto.perfume.PerfumeExternalDTO;
 import ar.edu.huergo.lbgonzalez.fragantify.entity.perfume.Perfume;
 import ar.edu.huergo.lbgonzalez.fragantify.mapper.perfume.PerfumeMapper;
 import ar.edu.huergo.lbgonzalez.fragantify.service.perfume.PerfumeService;
@@ -85,8 +85,8 @@ public class PerfumeController {
 
     // Busca perfumes en la API externa, validando que los filtros sean correctos
     @GetMapping("/externos")
-    public ResponseEntity<List<FragranceExternalDTO>> buscarPerfumesExternos(@RequestParam(required = false) java.util.Map<String, String> filtros) {
-        List<FragranceExternalDTO> resultados = perfumeApiService.buscarExternos(filtros);
+    public ResponseEntity<List<PerfumeExternalDTO>> buscarPerfumesExternos(@RequestParam(required = false) java.util.Map<String, String> filtros) {
+        List<PerfumeExternalDTO> resultados = perfumeApiService.buscarExternos(filtros);
         return ResponseEntity.ok(resultados);
     }
 

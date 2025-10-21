@@ -3,10 +3,9 @@ import { ImageWithFallback } from "./figma/ImageWithFallback";
 
 interface HeroProps {
   onGetStarted?: () => void;
-  onLearnMore?: () => void;
 }
 
-export function Hero({ onGetStarted, onLearnMore }: HeroProps) {
+export function Hero({ onGetStarted }: HeroProps) {
   return (
     <section
       id="home"
@@ -36,10 +35,7 @@ export function Hero({ onGetStarted, onLearnMore }: HeroProps) {
           >
             Explorar catalogo
           </Button>
-          <Button
-            onClick={onLearnMore}
-            className="bg-transparent border-2 border-[#d4af37] text-[#d4af37] px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg rounded-lg hover:bg-[#d4af37] hover:text-black transition-all duration-300 shadow-lg"
-          >
+          <Button className="bg-transparent border-2 border-[#d4af37] text-[#d4af37] px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg rounded-lg hover:bg-[#d4af37] hover:text-black transition-all duration-300 shadow-lg">
             Conocer mas
           </Button>
         </div>

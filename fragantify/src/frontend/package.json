@@ -53,9 +53,7 @@
           "vite": "6.3.5"
       },
       "scripts": {
-          "predev": "node ./scripts/generate-index-html.cjs",
           "dev": "vite",
-          "prebuild": "node ./scripts/generate-index-html.cjs",
           "build": "vite build"
       }
   }

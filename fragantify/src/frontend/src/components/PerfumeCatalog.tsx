@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
@@ -123,7 +123,6 @@ export function PerfumeCatalog() {
               placeholder="Buscar por nombre o marca"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              ref={searchInputRef}
               className="bg-black text-white border-[#d4af37] placeholder-gray-400 shadow-md text-sm sm:text-base"
             />
             <Button
@@ -310,12 +309,3 @@ export function PerfumeCatalog() {
 }
 
 
-  const searchInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const focusHandler = () => {
-      searchInputRef.current?.focus({ preventScroll: false });
-    };
-    window.addEventListener("fragantify:focus-search", focusHandler);
-    return () => window.removeEventListener("fragantify:focus-search", focusHandler);
-  }, []);
