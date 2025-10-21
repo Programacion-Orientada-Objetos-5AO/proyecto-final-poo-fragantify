@@ -59,8 +59,17 @@ export function Header({ currentPage, onNavigate, isAuthenticated, userEmail, on
           </nav>
 
           <div className="hidden sm:flex items-center space-x-3 lg:space-x-4">
-            <Search className="w-4 h-4 lg:w-5 lg:h-5 text-[#d4af37] cursor-pointer hover:scale-110 transition-transform duration-300" />
-            <ShoppingBag className="w-4 h-4 lg:w-5 lg:h-5 text-white cursor-pointer hover:text-[#d4af37] transition-colors duration-300" />
+            <Search
+              className="w-4 h-4 lg:w-5 lg:h-5 text-[#d4af37] cursor-pointer hover:scale-110 transition-transform duration-300"
+              onClick={() => {
+                handleNavigate("catalog");
+                window.dispatchEvent(new Event("fragantify:focus-search"));
+              }}
+            />
+            <ShoppingBag
+              className="w-4 h-4 lg:w-5 lg:h-5 text-white cursor-pointer hover:text-[#d4af37] transition-colors duration-300"
+              onClick={() => handleNavigate("pack-builder")}
+            />
 
             {isAuthenticated ? (
               <DropdownMenu>
@@ -105,7 +114,13 @@ export function Header({ currentPage, onNavigate, isAuthenticated, userEmail, on
           </div>
 
           <div className="sm:hidden flex items-center space-x-3">
-            <Search className="w-5 h-5 text-[#d4af37] cursor-pointer" />
+            <Search
+              className="w-5 h-5 text-[#d4af37] cursor-pointer"
+              onClick={() => {
+                handleNavigate("catalog");
+                window.dispatchEvent(new Event("fragantify:focus-search"));
+              }}
+            />
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="text-white hover:text-[#d4af37] transition-colors"

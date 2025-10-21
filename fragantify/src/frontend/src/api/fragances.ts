@@ -25,5 +25,5 @@ function buildQuery(params?: FragranceFilters): string {
 
 export function getFragrances(filters?: FragranceFilters) {
   const query = buildQuery(filters);
-  return apiFetch<FragranceApiResponse[]>(`/api/fragancias${query}`);
+  return apiFetch<FragranceApiResponse[]>(`/api/perfumes/externos${query}`);
 }

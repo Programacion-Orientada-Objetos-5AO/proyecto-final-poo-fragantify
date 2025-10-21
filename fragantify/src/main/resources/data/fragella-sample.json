@@ -1,0 +1,155 @@
+[
+  {
+    "Name": "Eros Eau de Parfum",
+    "Brand": "Versace",
+    "Price": "$110",
+    "Image URL": "https://images.unsplash.com/photo-1612810806695-30ba0a5c3094?auto=format&fit=crop&w=720&q=80",
+    "Image Fallbacks": [
+      "https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=720&q=80"
+    ],
+    "Gender": "men",
+    "Longevity": 80,
+    "Sillage": 70,
+    "General Notes": [
+      "Menta",
+      "Manzana verde",
+      "Vainilla"
+    ],
+    "Main Accords": [
+      "Fresco",
+      "Ambarado",
+      "Oriental"
+    ],
+    "Main Accords Percentage": {
+      "Fresh Spicy": 32.5,
+      "Amber": 27.1,
+      "Oriental": 19.8
+    },
+    "Notes": {
+      "Top": [
+        { "name": "Menta", "imageUrl": "https://images.unsplash.com/photo-1562059390-a761a084768e?auto=format&fit=crop&w=250&q=80" },
+        { "name": "Manzana verde" }
+      ],
+      "Middle": [
+        { "name": "Haba tonka" },
+        { "name": "Geranio" }
+      ],
+      "Base": [
+        { "name": "Vainilla" },
+        { "name": "Cedro" }
+      ]
+    },
+    "Purchase URL": "https://www.versace.com/international/es/hombre/fragrances",
+    "Season Ranking": [
+      { "name": "Primavera", "score": 8.5 },
+      { "name": "Otono", "score": 9.1 }
+    ],
+    "Occasion Ranking": [
+      { "name": "Noches", "score": 9.4 },
+      { "name": "Eventos formales", "score": 8.7 }
+    ]
+  },
+  {
+    "Name": "La Vie Est Belle",
+    "Brand": "Lancôme",
+    "Price": "$125",
+    "Image URL": "https://images.unsplash.com/photo-1556228578-8c89e6adf883?auto=format&fit=crop&w=720&q=80",
+    "Image Fallbacks": [
+      "https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=720&q=80"
+    ],
+    "Gender": "women",
+    "Longevity": 85,
+    "Sillage": 75,
+    "General Notes": [
+      "Iris",
+      "Jazmín",
+      "Praliné"
+    ],
+    "Main Accords": [
+      "Dulce",
+      "Floral",
+      "Empolvado"
+    ],
+    "Main Accords Percentage": {
+      "Sweet": 34.2,
+      "Floral": 28.3,
+      "Powdery": 18.7
+    },
+    "Notes": {
+      "Top": [
+        { "name": "Grosella negra" },
+        { "name": "Pera" }
+      ],
+      "Middle": [
+        { "name": "Iris" },
+        { "name": "Jazmín" },
+        { "name": "Flor de azahar" }
+      ],
+      "Base": [
+        { "name": "Praliné" },
+        { "name": "Vainilla" },
+        { "name": "Pachulí" }
+      ]
+    },
+    "Purchase URL": "https://www.lancome.com/es_ES/fragrance.html",
+    "Season Ranking": [
+      { "name": "Invierno", "score": 8.9 },
+      { "name": "Otono", "score": 8.1 }
+    ],
+    "Occasion Ranking": [
+      { "name": "Dia a dia", "score": 8.0 },
+      { "name": "Citas", "score": 9.0 }
+    ]
+  },
+  {
+    "Name": "Santal 33",
+    "Brand": "Le Labo",
+    "Price": "$210",
+    "Image URL": "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?auto=format&fit=crop&w=720&q=80",
+    "Image Fallbacks": [
+      "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?auto=format&fit=crop&w=720&q=80"
+    ],
+    "Gender": "unisex",
+    "Longevity": 90,
+    "Sillage": 65,
+    "General Notes": [
+      "Sándalo",
+      "Cardamomo",
+      "Cuero"
+    ],
+    "Main Accords": [
+      "Amaderado",
+      "Especiado",
+      "Cuero"
+    ],
+    "Main Accords Percentage": {
+      "Woody": 36.0,
+      "Spicy": 25.5,
+      "Leather": 17.3
+    },
+    "Notes": {
+      "Top": [
+        { "name": "Cardamomo" },
+        { "name": "Violeta" }
+      ],
+      "Middle": [
+        { "name": "Iris" },
+        { "name": "Papiro" }
+      ],
+      "Base": [
+        { "name": "Sándalo" },
+        { "name": "Cedro de Virginia" },
+        { "name": "Cuero" }
+      ]
+    },
+    "Purchase URL": "https://www.lelabofragrances.com/santal-33.html",
+    "Season Ranking": [
+      { "name": "Invierno", "score": 9.2 },
+      { "name": "Primavera", "score": 7.4 }
+    ],
+    "Occasion Ranking": [
+      { "name": "Trabajo", "score": 8.8 },
+      { "name": "Noche", "score": 8.5 }
+    ]
+  }
+]

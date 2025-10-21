@@ -46,12 +46,24 @@ function App() {
     </section>
   ), []);
 
+  const focusCatalogSearch = () => {
+    window.dispatchEvent(new Event("fragantify:focus-search"));
+  };
+
+  const goToCatalog = () => {
+    setCurrentPage("catalog");
+    focusCatalogSearch();
+  };
+
   const renderPage = () => {
     switch (currentPage) {
       case "home":
         return (
           <>
-            <Hero onGetStarted={() => setCurrentPage(isAuthenticated ? "catalog" : "register")} />
+            <Hero
+              onGetStarted={() => setCurrentPage(isAuthenticated ? "catalog" : "register")}
+              onLearnMore={goToCatalog}
+            />
             <FeaturedProducts />
             <PerfumeCatalog />
           </>
@@ -103,7 +115,10 @@ function App() {
       default:
         return (
           <>
-            <Hero onGetStarted={() => setCurrentPage(isAuthenticated ? "catalog" : "register")} />
+            <Hero
+              onGetStarted={() => setCurrentPage(isAuthenticated ? "catalog" : "register")}
+              onLearnMore={goToCatalog}
+            />
             <FeaturedProducts />
             <PerfumeCatalog />
           </>

@@ -88,40 +88,19 @@ public class SecurityConfig {
     }
 
     /* =====================================
-       2) Web (Thymeleaf): formLogin, stateful
+       2) Web fallback: permit static/assets
        ===================================== */
-        @Bean
-        @Order(2)
-        SecurityFilterChain webSecurity(HttpSecurity http) throws Exception {
+    @Bean
+    @Order(2)
+    SecurityFilterChain webSecurity(HttpSecurity http) throws Exception {
         http
-                .securityMatcher("/**")
-                .cors(Customizer.withDefaults())
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                // ⬇️ agrega estas dos líneas
-                .requestMatchers("/login.html", "/app.html").permitAll()
-                // estáticos habituales
-                .requestMatchers("/", "/login", "/favicon.ico",
-                                "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
-                .anyRequest().authenticated()
-                )
-                .formLogin(login -> login
-                .loginPage("/login")
-                .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/", true)
-                .failureUrl("/login?error=true")
-                .permitAll()
-                )
-                .logout(lo -> lo
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/login?logout=true")
-                .permitAll()
-                )
-                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
+            .securityMatcher("/**")
+            .cors(Customizer.withDefaults())
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
 
         return http.build();
-        }
-
+    }
 
     /* ===== infra común ===== */
 
@@ -192,6 +171,10 @@ public class SecurityConfig {
         return cfg.getAuthenticationManager();
     }
 }
+
+
+
+
 
 
 

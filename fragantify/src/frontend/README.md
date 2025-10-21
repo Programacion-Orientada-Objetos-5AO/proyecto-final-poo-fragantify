@@ -5,7 +5,7 @@
 
   ## Running the code
 
-  Run `npm i` to install the dependencies.
-
-  Run `npm run dev` to start the development server.
+  1. Run `npm install` to install the dependencies (only React/TSX sources are tracked).
+  2. Run `npm run dev` to start the Vite development server. The predev script will generate the minimal `index.html` shell automatically before Vite boots.
+  3. Run `npm run build` to produce a production bundle in `src/frontend/build/` (prebuild also generates the HTML shell).
   
