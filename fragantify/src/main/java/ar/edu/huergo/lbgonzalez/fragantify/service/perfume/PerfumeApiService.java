@@ -20,12 +20,13 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import ar.edu.huergo.lbgonzalez.fragantify.dto.perfume.FragranceDTO;
 import ar.edu.huergo.lbgonzalez.fragantify.dto.perfume.PerfumeExternalDTO;
 import ar.edu.huergo.lbgonzalez.fragantify.entity.cache.FragranceCacheEntry;
 import ar.edu.huergo.lbgonzalez.fragantify.repository.perfume.FragranceCacheRepository;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
@@ -47,7 +48,11 @@ public class PerfumeApiService {
     @Value("${fragella.api.timeout-seconds:10}")
     private long timeoutSeconds;
 
-    private static final Set<String> ALLOWED_KEYS = Set.of("name", "brand", "gender");
+    private static final Set<String> ALLOWED_KEYS = Set.of(
+            "name", "brand", "gender",
+            // pagination/common params to maximize fetchability
+            "page", "size", "limit", "per_page", "perPage", "pageSize", "offset", "cursor"
+    );
     private static final Set<String> ALLOWED_GENDERS = Set.of("men", "women", "unisex");
 
     private final WebClient webClient;
@@ -55,6 +60,7 @@ public class PerfumeApiService {
     private final FragranceCacheRepository cacheRepository;
     private final FragranceStorageService storageService;
     private final ResourceLoader resourceLoader;
+    private final ar.edu.huergo.lbgonzalez.fragantify.repository.perfume.FragranceJsonRepository jsonRepository;
 
     private static final String FALLBACK_RESOURCE = "classpath:fragrances/fragrances-sample.json";
 
@@ -97,6 +103,13 @@ public class PerfumeApiService {
 
     private List<FragranceDTO> invocarApi(Map<String, String> params) {
         try {
+            // Try offline JSON first
+            List<FragranceDTO> offline = jsonRepository.loadAll();
+            if (offline != null && !offline.isEmpty()) {
+                log.info("Using {} fragrances from offline JSON.", offline.size());
+                return aplicarFiltros(offline, params);
+            }
+
             Mono<String> response = webClient.get()
                     .uri(uriBuilder -> {
                         var builder = uriBuilder.path(fragrancesPath);
@@ -131,12 +144,120 @@ public class PerfumeApiService {
             if (!resultados.isEmpty() && params.isEmpty()) {
                 guardarEnCache(payload);
                 storageService.replaceAll(resultados);
+                // also persist to JSON for offline use
+                jsonRepository.replaceAll(resultados);
             }
             return resultados;
         } catch (Exception ex) {
             log.warn("No se pudo consultar la API externa de fragancias: {}", ex.getMessage());
             return cargarDesdeCacheOFallback(params);
         }
+    }
+
+    // Call external API directly (bypass offline JSON) – used for bulk sync
+    private List<FragranceDTO> invocarApiExternalOnly(Map<String, String> params) {
+        try {
+            Mono<String> response = webClient.get()
+                    .uri(uriBuilder -> {
+                        var builder = uriBuilder.path(fragrancesPath);
+                        params.forEach((key, value) -> {
+                            if (value != null && !value.isBlank()) {
+                                builder.queryParam(key, value);
+                            }
+                        });
+                        return builder.build();
+                    })
+                    .accept(MediaType.APPLICATION_JSON)
+                    .header(apiKeyHeader, apiKey)
+                    .exchangeToMono(clientResponse -> {
+                        var status = clientResponse.statusCode();
+                        Mono<String> bodyMono = clientResponse.bodyToMono(String.class)
+                                .defaultIfEmpty("");
+                        if (status.is2xxSuccessful()) {
+                            return bodyMono;
+                        }
+                        return bodyMono.flatMap(body -> {
+                            log.warn("Fragella API respondio {}. Payload: {}", status.value(), preview(body));
+                            return Mono.error(new IllegalStateException("Fragella API respondio status " + status.value()));
+                        });
+                    });
+
+            String payload = response.block(resolveTimeout());
+            if (payload == null || payload.isBlank()) {
+                return Collections.emptyList();
+            }
+            return parseResponse(payload);
+        } catch (Exception ex) {
+            log.warn("Fallo consulta directa a API externa: {}", ex.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    // Bulk sync using pages/offset or name prefixes; merges into JSON without losing existing entries
+    public int bulkSync(String strategy, int maxPages, Integer pageSize) {
+        strategy = strategy == null ? "page" : strategy;
+        int size = (pageSize == null || pageSize <= 0) ? 100 : pageSize;
+
+        // Load existing
+        List<FragranceDTO> existing = jsonRepository.loadAll();
+        java.util.Map<String, FragranceDTO> merged = new java.util.LinkedHashMap<>();
+        if (existing != null) {
+            for (FragranceDTO f : existing) {
+                merged.put(slug(f.getBrand(), f.getName()), f);
+            }
+        }
+
+        int fetchedTotal = 0;
+
+        switch (strategy) {
+            case "offset" -> {
+                int offset = 0;
+                for (int i = 0; i < maxPages; i++) {
+                    Map<String, String> params = new java.util.HashMap<>();
+                    params.put("offset", String.valueOf(offset));
+                    params.put("limit", String.valueOf(size));
+                    List<FragranceDTO> page = invocarApiExternalOnly(params);
+                    if (page == null || page.isEmpty()) break;
+                    for (FragranceDTO f : page) merged.put(slug(f.getBrand(), f.getName()), f);
+                    fetchedTotal += page.size();
+                    offset += size;
+                }
+            }
+            case "prefix" -> {
+                for (char c = 'a'; c <= 'z'; c++) {
+                    Map<String, String> params = new java.util.HashMap<>();
+                    params.put("name", String.valueOf(c));
+                    List<FragranceDTO> page = invocarApiExternalOnly(params);
+                    if (page == null || page.isEmpty()) continue;
+                    for (FragranceDTO f : page) merged.put(slug(f.getBrand(), f.getName()), f);
+                    fetchedTotal += page.size();
+                }
+            }
+            default -> { // "page"
+                for (int pageNum = 1; pageNum <= maxPages; pageNum++) {
+                    Map<String, String> params = new java.util.HashMap<>();
+                    params.put("page", String.valueOf(pageNum));
+                    params.put("size", String.valueOf(size));
+                    List<FragranceDTO> page = invocarApiExternalOnly(params);
+                    if (page == null || page.isEmpty()) break;
+                    for (FragranceDTO f : page) merged.put(slug(f.getBrand(), f.getName()), f);
+                    fetchedTotal += page.size();
+                }
+            }
+        }
+
+        jsonRepository.replaceAll(new java.util.ArrayList<>(merged.values()));
+        log.info("Bulk sync merged total {} items (new + existing).", merged.size());
+        return fetchedTotal;
+    }
+
+    private String slug(String brand, String name) {
+        String b = brand == null ? "unknown" : brand;
+        String n = name == null ? "fragrance" : name;
+        String base = (b + '-' + n).toLowerCase(Locale.ROOT)
+                .replaceAll("[^a-z0-9]+", "-")
+                .replaceAll("(^-|-$)", "");
+        return base.isBlank() ? ("fragrance-" + System.currentTimeMillis()) : base;
     }
 
     private List<FragranceDTO> parseResponse(String payload) {

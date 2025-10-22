@@ -19,6 +19,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ar.edu.huergo.lbgonzalez.fragantify.dto.perfume.CrearActualizarPerfumeDTO;
 import ar.edu.huergo.lbgonzalez.fragantify.dto.perfume.MostrarPerfumeDTO;
 import ar.edu.huergo.lbgonzalez.fragantify.dto.perfume.PerfumeExternalDTO;
+import ar.edu.huergo.lbgonzalez.fragantify.dto.perfume.FragranceDTO;
 import ar.edu.huergo.lbgonzalez.fragantify.entity.perfume.Perfume;
 import ar.edu.huergo.lbgonzalez.fragantify.mapper.perfume.PerfumeMapper;
 import ar.edu.huergo.lbgonzalez.fragantify.service.perfume.PerfumeService;
@@ -31,6 +32,7 @@ public class PerfumeController {
 
     @Autowired private PerfumeService perfumeService;
     @Autowired private PerfumeApiService perfumeApiService;
+    @Autowired private ar.edu.huergo.lbgonzalez.fragantify.repository.perfume.FragranceJsonRepository jsonRepository;
     @Autowired private PerfumeMapper perfumeMapper;
 
     // 👇 Inyectá el service externo (no lo llames estático)
@@ -88,6 +90,30 @@ public class PerfumeController {
     public ResponseEntity<List<PerfumeExternalDTO>> buscarPerfumesExternos(@RequestParam(required = false) java.util.Map<String, String> filtros) {
         List<PerfumeExternalDTO> resultados = perfumeApiService.buscarExternos(filtros);
         return ResponseEntity.ok(resultados);
+    }
+
+    // Admin: reemplazar el dataset JSON offline con una lista de fragancias
+    // Protegido por SecurityConfig: POST /api/perfumes/** requiere rol ADMIN
+    @PostMapping("/externos/import")
+    public ResponseEntity<Void> importarFraganciasOffline(@RequestBody List<FragranceDTO> items) {
+        jsonRepository.replaceAll(items);
+        return ResponseEntity.noContent().build();
+    }
+
+    // Admin: realiza bulk sync desde la API externa y fusiona con el JSON existente
+    // Ej: POST /api/perfumes/externos/sync/bulk?strategy=page&maxPages=50&pageSize=100
+    @PostMapping("/externos/sync/bulk")
+    public ResponseEntity<java.util.Map<String, Object>> bulkSync(
+            @RequestParam(defaultValue = "page") String strategy,
+            @RequestParam(defaultValue = "50") int maxPages,
+            @RequestParam(defaultValue = "100") int pageSize) {
+        int fetched = perfumeApiService.bulkSync(strategy, maxPages, pageSize);
+        return ResponseEntity.ok(java.util.Map.of(
+                "strategy", strategy,
+                "maxPages", maxPages,
+                "pageSize", pageSize,
+                "fetched", fetched
+        ));
     }
 
     @GetMapping("/marca/{marca}")

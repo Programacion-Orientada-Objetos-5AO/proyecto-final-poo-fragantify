@@ -36,7 +36,7 @@ public class AuthController {
     private final UsuarioMapper usuarioMapper;
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDTO> login(@RequestBody @Valid LoginDTO request) {
+    public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginDTO request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.username(), request.password()));
 
@@ -52,7 +52,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponseDTO> register(@RequestBody @Valid RegistrarDTO request) {
+    public ResponseEntity<AuthResponseDTO> register(@RequestBody RegistrarDTO request) {
         Usuario usuario = usuarioService.registrar(
                 usuarioMapper.toEntity(request),
                 request.password(),
