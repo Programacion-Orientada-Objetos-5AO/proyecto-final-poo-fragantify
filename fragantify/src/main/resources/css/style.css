@@ -1,0 +1,101 @@
+/* ====== Tema ====== */
+:root {
+  --background: #0f172a; /* fondo general */
+  --foreground: #e03030; /* color del texto */
+  --card: #000000; /* fondo de las cards */
+  --card-foreground: #ffffff; /* texto dentro de las cards */
+  --primary: #d4af37; /* color dorado principal */
+  --secondary: #0f172a; /* fondo secundario */
+  --muted: #1e293b; /* gris azulado para zonas “muted” */
+  --border: #374151; /* color de bordes */
+  --radius: 0.75rem; /* radio de bordes */
+
+
+}
+
+/* ====== Base ====== */
+body.bg-body {
+  background-color: var(--background) !important;
+  color: var(--foreground) !important;
+}
+
+.bg-body {
+  background-color: var(--background) !important;
+}
+
+/* ====== Navbar ====== */
+.navbar-brand {
+  letter-spacing: .2px;
+}
+
+.navbar .btn {
+  border-radius: 10px;
+}
+
+/* ====== Cards ====== */
+.card {
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  background-color: var(--card);
+  color: var(--card-foreground);
+}
+
+.card .card-title {
+  margin-bottom: .75rem;
+}
+
+/* ====== Formularios ====== */
+.form-label {
+  font-weight: 600;
+}
+
+.form-control {
+  border-radius: 10px;
+  background-color: var(--muted);
+  color: var(--foreground);
+}
+
+.form-control:focus {
+  box-shadow: 0 0 0 .2rem rgba(17, 17, 17, .15);
+  border-color: var(--primary);
+}
+
+.btn {
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.btn-primary {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.btn-primary:hover {
+  filter: brightness(1.05);
+}
+
+/* ====== Tablas (para app.html) ====== */
+.table {
+  background: var(--card);
+  color: var(--card-foreground);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.table > :not(caption) > * > * {
+  vertical-align: middle;
+}
+
+/* ====== Utilidades ====== */
+.text-muted {
+  color: var(--muted) !important;
+}
+
+/* ====== (Opcional) Mejor centrado vertical en login en pantallas grandes ====== */
+@media (min-width: 992px) {
+  body.bg-body > .container.py-5 {
+    min-height: calc(100dvh - 88px);
+    display: flex;
+    align-items: center;
+  }
+}

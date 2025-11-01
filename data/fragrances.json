@@ -1,0 +1,75 @@
+[ {
+  "Name" : "Aventus",
+  "Brand" : "Creed",
+  "Price" : "$450",
+  "Image URL" : "/images/perfumes/creed-aventus.jpg",
+  "Gender" : "men",
+  "Longevity" : 85,
+  "Sillage" : 80,
+  "General Notes" : [ "Fruity", "Smoky", "Woody" ],
+  "Main Accords" : [ "Pineapple", "Birch", "Musk" ],
+  "Main Accords Percentage" : {
+    "Pineapple" : 0.35,
+    "Birch" : 0.25,
+    "Musk" : 0.2
+  },
+  "Notes" : {
+    "Top" : [ {
+      "name" : "Pineapple",
+      "imageUrl" : "/images/notes/pineapple.jpg"
+    }, {
+      "name" : "Apple",
+      "imageUrl" : "/images/notes/apple.jpg"
+    } ],
+    "Middle" : [ {
+      "name" : "Birch",
+      "imageUrl" : "/images/notes/birch.jpg"
+    } ],
+    "Base" : [ {
+      "name" : "Musk",
+      "imageUrl" : "/images/notes/musk.jpg"
+    } ]
+  },
+  "Image Fallbacks" : [ "https://example.com/img/creed-aventus-1.jpg", "https://example.com/img/creed-aventus-2.jpg" ],
+  "Purchase URL" : "https://example.com/buy/creed-aventus",
+  "Season Ranking" : [ {
+    "name" : "Summer",
+    "score" : 0.8
+  } ],
+  "Occasion Ranking" : [ {
+    "name" : "Evening",
+    "score" : 0.9
+  } ]
+}, {
+  "Name" : "Light Blue",
+  "Brand" : "Dolce & Gabbana",
+  "Price" : "$95",
+  "Image URL" : "/images/perfumes/dolce-gabbana-light-blue.jpg",
+  "Gender" : "women",
+  "Longevity" : 60,
+  "Sillage" : 55,
+  "General Notes" : [ "Citrus", "Fresh" ],
+  "Main Accords" : [ "Lemon", "Cedar" ],
+  "Main Accords Percentage" : {
+    "Lemon" : 0.4,
+    "Cedar" : 0.2
+  },
+  "Notes" : {
+    "Top" : [ {
+      "name" : "Sicilian Lemon",
+      "imageUrl" : "/images/notes/lemon.jpg"
+    } ],
+    "Middle" : [ {
+      "name" : "Jasmine",
+      "imageUrl" : "/images/notes/jasmine.jpg"
+    } ],
+    "Base" : [ {
+      "name" : "Cedar",
+      "imageUrl" : "/images/notes/cedar.jpg"
+    } ]
+  },
+  "Image Fallbacks" : null,
+  "Purchase URL" : "https://example.com/buy/dg-light-blue",
+  "Season Ranking" : null,
+  "Occasion Ranking" : null
+} ]
