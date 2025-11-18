@@ -96,7 +96,7 @@ public class SecurityConfig {
         @Order(2)
         SecurityFilterChain webSecurity(HttpSecurity http) throws Exception {
         http
-                .securityMatcher("/**")
+                .securityMatcher("/app/**")
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
