@@ -75,6 +75,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT,    "/api/fragancias/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/fragancias/**").hasRole("ADMIN")
 
+                .requestMatchers("/api/tareas/**").permitAll()
+
                 // cualquier otro /api/** requiere JWT válido
                 .anyRequest().authenticated()
             )
@@ -94,7 +96,7 @@ public class SecurityConfig {
         @Order(2)
         SecurityFilterChain webSecurity(HttpSecurity http) throws Exception {
         http
-                .securityMatcher("/**")
+                .securityMatcher("/app/**")
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
