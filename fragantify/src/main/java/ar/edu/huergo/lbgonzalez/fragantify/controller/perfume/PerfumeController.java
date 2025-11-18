@@ -35,7 +35,6 @@ public class PerfumeController {
     @Autowired private ar.edu.huergo.lbgonzalez.fragantify.repository.perfume.FragranceJsonRepository jsonRepository;
     @Autowired private PerfumeMapper perfumeMapper;
 
-    // 👇 Inyectá el service externo (no lo llames estático)
 
     @GetMapping
     public ResponseEntity<List<MostrarPerfumeDTO>> obtenerTodosLosPerfumes() {

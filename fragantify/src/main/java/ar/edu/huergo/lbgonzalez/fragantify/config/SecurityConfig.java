@@ -75,6 +75,16 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT,    "/api/fragancias/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/fragancias/**").hasRole("ADMIN")
 
+
+                .requestMatchers(HttpMethod.GET,    "/api/requests/**").permitAll()
+                .requestMatchers(HttpMethod.POST,   "/api/requests/**").permitAll()
+                .requestMatchers(HttpMethod.PUT,    "/api/requests/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/requess/**").hasRole("ADMIN")
+
+
+
+
+
                 // cualquier otro /api/** requiere JWT válido
                 .anyRequest().authenticated()
             )
