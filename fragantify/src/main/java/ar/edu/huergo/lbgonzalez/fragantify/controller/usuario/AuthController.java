@@ -21,7 +21,6 @@ import ar.edu.huergo.lbgonzalez.fragantify.entity.security.Usuario;
 import ar.edu.huergo.lbgonzalez.fragantify.mapper.perfume.security.UsuarioMapper;
 import ar.edu.huergo.lbgonzalez.fragantify.service.security.JwtTokenService;
 import ar.edu.huergo.lbgonzalez.fragantify.service.security.UsuarioService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
